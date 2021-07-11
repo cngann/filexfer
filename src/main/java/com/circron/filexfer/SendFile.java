@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SendFile {
@@ -27,7 +27,13 @@ public class SendFile {
     }
 
     public void send(File file) {
-        send(Collections.singletonList(file));
+        List<File> files = new ArrayList<>();
+        if (file.isDirectory()) {
+
+        } else {
+            files.add(file);
+        }
+        send(files);
     }
 
     public void send(List<File> files) {
@@ -58,6 +64,7 @@ public class SendFile {
             }
             dataOutputStream.close();
         } catch (IOException e) {
+            logger.error("IOException");
             e.printStackTrace();
         }
     }

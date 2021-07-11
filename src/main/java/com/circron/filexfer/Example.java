@@ -10,19 +10,25 @@ import java.util.List;
 public class Example {
     public static void main(String[] args) {
         Logger logger = Utils.getLogger(Example.class);
+        // Configure this
         FileServerConfig fileServerConfig = new FileServerConfig();
         fileServerConfig.setFromPath("/tmp");
         fileServerConfig.setToPath("/tmp");
         fileServerConfig.setPort(3318);
         fileServerConfig.setEncrypted(false);
+        // File receiver
         FileServer fileServer = new FileServer(fileServerConfig);
         new Thread(fileServer).start();
+        // File sender
         try {
             SendFile sendFile = new SendFile(fileServerConfig);
             List<File> files = Arrays.asList(new File("example"), new File("example1"), new File("example2"), new File("example3"));
             sendFile.send(files);
         } catch (IOException e) {
             logger.error("Could not open socket");
+            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Something else went horribly wrong");
             e.printStackTrace();
         }
     }

@@ -10,6 +10,26 @@ public class FileServerConfig {
     String toPath = "/tmp";
     String passKey = "someSortOfPasskey";
     String encryptionCipher = "PBEWithMD5AndDES";
+    String encryptedFileExtension = ".des";
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileServerConfig that = (FileServerConfig)o;
+        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher) && Objects.equals(encryptedFileExtension, that.encryptedFileExtension);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(port, streamBufferLength, encrypted, fromPath, toPath, passKey, encryptionCipher, encryptedFileExtension);
+    }
+
+    public String getEncryptedFileExtension() {
+        return encryptedFileExtension;
+    }
+
+    public void setEncryptedFileExtension(String encryptedFileExtension) {
+        this.encryptedFileExtension = encryptedFileExtension;
+    }
 
     public String getPassKey() {
         return passKey;
@@ -65,16 +85,5 @@ public class FileServerConfig {
 
     public void setStreamBufferLength(int streamBufferLength) {
         this.streamBufferLength = streamBufferLength;
-    }
-
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileServerConfig that = (FileServerConfig)o;
-        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher);
-    }
-
-    @Override public int hashCode() {
-        return Objects.hash(port, streamBufferLength, encrypted, fromPath, toPath, passKey, encryptionCipher);
     }
 }

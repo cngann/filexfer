@@ -1,7 +1,5 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,11 +18,12 @@ public class FileEncrypt {
     public static File encryptFile(File file, FileServerConfig fileServerConfig) throws Exception {
         if (!fileServerConfig.isEncrypted()) return file;
         if (file.isDirectory()) {
+            // TODO: use dir parser in Utils class
             throw new Exception("Cannot encrypt a directory");
         }
         String filename = file.getPath();
         String password = fileServerConfig.getPassKey();
-        tempFilename = filename + ".des";
+        tempFilename = filename + fileServerConfig.getEncryptedFileExtension();
         tempFile = new File(tempFilename);
         FileInputStream inFile = new FileInputStream(file);
         FileOutputStream outFile = new FileOutputStream(tempFile);
@@ -32,8 +31,8 @@ public class FileEncrypt {
         SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileServerConfig.getEncryptionCipher());
         SecretKey sKey = sKeyFac.generateSecret(keySpec);
         byte[] salt = new byte[8];
-        Random rnd = new Random();
-        rnd.nextBytes(salt);
+        Random random = new Random();
+        random.nextBytes(salt);
         int iterations = 100;
         PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, iterations);
         Cipher c = Cipher.getInstance(fileServerConfig.getEncryptionCipher());
