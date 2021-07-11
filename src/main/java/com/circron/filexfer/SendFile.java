@@ -37,7 +37,7 @@ public class SendFile {
             dataOutputStream.writeInt(files.size());
             dataOutputStream.flush();
             int length;
-            byte[] bytes = new byte[4092];
+            byte[] bytes = new byte[fileServerConfig.getStreamBufferLength()];
             for (File file : files) {
                 if (fileServerConfig.isEncrypted()) {
                     try {

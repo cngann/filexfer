@@ -26,7 +26,7 @@ public class ReceiveFile implements Runnable {
             int length;
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
-                byte[] buf = new byte[4092];
+                byte[] buf = new byte[fileServerConfig.getStreamBufferLength()];
                 String filename = Utils.getFilePath(fileServerConfig.getToPath(), dataInputStream.readUTF());
                 long fileSize = dataInputStream.readLong();
                 logger.debug("Receiving file: " + filename);

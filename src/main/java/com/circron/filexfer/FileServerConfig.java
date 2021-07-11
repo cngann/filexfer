@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class FileServerConfig {
     int port = 3318;
+    int streamBufferLength = 4092;
     boolean encrypted = false;
     String fromPath = "/tmp";
     String toPath = "/tmp";
@@ -58,14 +59,22 @@ public class FileServerConfig {
         this.encryptionCipher = encryptionCipher;
     }
 
+    public int getStreamBufferLength() {
+        return streamBufferLength;
+    }
+
+    public void setStreamBufferLength(int streamBufferLength) {
+        this.streamBufferLength = streamBufferLength;
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FileServerConfig that = (FileServerConfig)o;
-        return port == that.port && encrypted == that.encrypted && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher);
+        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher);
     }
 
     @Override public int hashCode() {
-        return Objects.hash(port, fromPath, toPath, passKey, encrypted, encryptionCipher);
+        return Objects.hash(port, streamBufferLength, encrypted, fromPath, toPath, passKey, encryptionCipher);
     }
 }

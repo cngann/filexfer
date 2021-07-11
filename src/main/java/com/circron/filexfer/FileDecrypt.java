@@ -37,5 +37,4 @@ public class FileDecrypt {
         cipher.init(Cipher.DECRYPT_MODE, sKey, parameterSpec);
         return Utils.getFile(decryptedFile, cipher, inFile, outFile);
     }
-
 }
