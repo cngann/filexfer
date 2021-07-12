@@ -22,29 +22,20 @@ public class ReceiveFile implements Runnable {
         try {
             DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             int number = dataInputStream.readInt();
-            int length;
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
-                byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
                 String filename = Utils.getFilePath(fileTransferConfig.getToPath(), dataInputStream.readUTF());
                 boolean isDirectory = dataInputStream.readBoolean();
+                boolean isEncrypted = dataInputStream.readBoolean();
                 long fileSize = dataInputStream.readLong();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename);
                 logger.debug("Receiving Size: " + fileSize);
                 logger.debug("Is directory: " + isDirectory);
+                logger.debug("Is encrypted: " + isEncrypted);
                 if (!isDirectory) {
-                    FileOutputStream fos = new FileOutputStream(filename);
-                    while (fileSize > 0 && (length = dataInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
-                        fos.write(buf, 0, length);
-                        fileSize -= length;
-                    }
-                    fos.close();
+                    writeFile(filename, fileSize, dataInputStream);
                     if (fileTransferConfig.isEncrypted()) {
-                        try {
-                            FileDecrypt.decryptFile(new File(filename));
-                        } catch (Exception e) {
-                            logger.error("Could not decrypt file\n" + e.getMessage());
-                        }
+                        handleEncryptedFile(filename);
                     }
                 } else {
                     boolean dirExists = new File(filename).mkdirs();
@@ -57,5 +48,29 @@ public class ReceiveFile implements Runnable {
             logger.error("IOException");
             e.printStackTrace();
         }
+    }
+
+    public void handleEncryptedFile(String filename) {
+        try {
+            FileDecrypt.decryptFile(new File(filename));
+            boolean deleted = new File(filename).delete();
+            if (deleted) {
+                logger.debug("Original encrypted file (" + filename + ") has been deleted");
+            }
+        } catch (Exception e) {
+            logger.error("Could not decrypt file\n" + e.getMessage());
+        }
+    }
+
+    public void writeFile(String filename, long fileSize, DataInputStream dataInputStream) throws IOException {
+        int length;
+        byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
+        FileOutputStream fos = new FileOutputStream(filename);
+        logger.error("File not found: " + filename);
+        while (fileSize > 0 && (length = dataInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
+            fos.write(buf, 0, length);
+            fileSize -= length;
+        }
+        fos.close();
     }
 }

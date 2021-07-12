@@ -26,7 +26,7 @@ public class FileDecrypt {
         String filename = Utils.getFilePath(fileTransferConfig.getToPath(), encryptedFile.getName());
         String password = fileTransferConfig.getPassKey();
         FileInputStream inFile = new FileInputStream(encryptedFile);
-        File decryptedFile = new File(filename);
+        File decryptedFile = new File(filename.replace(fileTransferConfig.getEncryptedFileExtension(), ""));
         FileOutputStream outFile = new FileOutputStream(decryptedFile);
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
         SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileTransferConfig.getEncryptionCipher());

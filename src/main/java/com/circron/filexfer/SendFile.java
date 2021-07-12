@@ -51,7 +51,8 @@ public class SendFile {
             byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
             for (File file : files) {
                 boolean isDirectory = file.isDirectory();
-                if (fileTransferConfig.isEncrypted()) {
+                boolean isEncrypted = fileTransferConfig.isEncrypted();
+                if (isEncrypted) {
                     try {
                         file = FileEncrypt.encryptFile(file);
                     } catch (Exception e) {
@@ -61,6 +62,7 @@ public class SendFile {
                 logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + file.getPath());
                 dataOutputStream.writeUTF(file.getPath());
                 dataOutputStream.writeBoolean(isDirectory);
+                dataOutputStream.writeBoolean(isEncrypted);
                 dataOutputStream.writeLong(file.length());
                 dataOutputStream.flush();
                 if (!file.isDirectory()) {
