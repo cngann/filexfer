@@ -8,7 +8,7 @@
 class Example {
     public static void main(String[] args) {
         // basic default configuration
-        FileTransferConfig fileTransferConfig = new FileTransferConfig();
+        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
         FileServer fileServer = new FileServer();
         new Thread(fileServer).start();
     }
@@ -19,7 +19,7 @@ class Example {
 class Example {
     public static void main(String[] args) {
         // basic default configuration
-        FileTransferConfig fileTransferConfig = new FileTransferConfig();
+        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
         try {
             SendFile sendFile = new SendFile();
             List<File> files = Arrays.asList(new File("file1"), new File("file2"), new File("file3"));
