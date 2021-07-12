@@ -1,5 +1,8 @@
 package com.circron.filexfer;
 
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 import java.util.Objects;
 
 public class FileTransferConfig {
@@ -12,6 +15,26 @@ public class FileTransferConfig {
     String passKey = "someSortOfPasskey";
     String encryptionCipher = "PBEWithMD5AndDES";
     String encryptedFileExtension = ".des";
+    Logger logger;
+
+    public static FileTransferConfig instance = null;
+
+    public static FileTransferConfig getInstance() {
+        if (FileTransferConfig.instance == null) {
+            FileTransferConfig.instance = new FileTransferConfig();
+        }
+        return FileTransferConfig.instance;
+    }
+
+    private FileTransferConfig() {}
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 
     public boolean isRecurseIntoDirectory() {
         return recurseIntoDirectory;

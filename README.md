@@ -9,7 +9,7 @@ class Example {
     public static void main(String[] args) {
         // basic default configuration
         FileTransferConfig fileTransferConfig = new FileTransferConfig();
-        FileServer fileServer = new FileServer(fileTransferConfig);
+        FileServer fileServer = new FileServer();
         new Thread(fileServer).start();
     }
 }
@@ -21,7 +21,7 @@ class Example {
         // basic default configuration
         FileTransferConfig fileTransferConfig = new FileTransferConfig();
         try {
-            SendFile sendFile = new SendFile(fileTransferConfig);
+            SendFile sendFile = new SendFile();
             List<File> files = Arrays.asList(new File("file1"), new File("file2"), new File("file3"));
             sendFile.send(files);
         } catch (Exception e) {

@@ -11,12 +11,11 @@ import java.net.Socket;
 
 public class ReceiveFile implements Runnable {
     Socket socket;
-    FileTransferConfig fileTransferConfig;
+    FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
     Logger logger = Utils.getLogger(this.getClass());
 
-    public ReceiveFile(Socket socket, FileTransferConfig fileTransferConfig) {
+    public ReceiveFile(Socket socket) {
         this.socket = socket;
-        this.fileTransferConfig = fileTransferConfig;
     }
 
     public void run() {
@@ -42,7 +41,7 @@ public class ReceiveFile implements Runnable {
                     fos.close();
                     if (fileTransferConfig.isEncrypted()) {
                         try {
-                            FileDecrypt.decryptFile(new File(filename), fileTransferConfig);
+                            FileDecrypt.decryptFile(new File(filename));
                         } catch (Exception e) {
                             logger.error("Could not decrypt file\n" + e.getMessage());
                         }

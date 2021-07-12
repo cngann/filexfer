@@ -19,7 +19,9 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 public class FileDecrypt {
-    public static File decryptFile(File encryptedFile, FileTransferConfig fileTransferConfig) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+
+    public static File decryptFile(File encryptedFile) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted()) return encryptedFile;
         String filename = Utils.getFilePath(fileTransferConfig.getToPath(), encryptedFile.getName());
         String password = fileTransferConfig.getPassKey();

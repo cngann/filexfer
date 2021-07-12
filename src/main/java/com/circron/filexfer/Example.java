@@ -11,18 +11,18 @@ public class Example {
     public static void main(String[] args) {
         Logger logger = Utils.getLogger(Example.class);
         // Configure this
-        FileTransferConfig fileTransferConfig = new FileTransferConfig();
+        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
         fileTransferConfig.setFromPath("/tmp");
         fileTransferConfig.setToPath("/tmp");
         fileTransferConfig.setPort(3318);
         fileTransferConfig.setEncrypted(false);
         fileTransferConfig.setRecurseIntoDirectory(false);
-        FileServer fileServer = new FileServer(fileTransferConfig);
+        FileServer fileServer = new FileServer();
         new Thread(fileServer).start();
         // File sender
         try {
-            SendFile sendFile = new SendFile(fileTransferConfig);
-            List<File> files = Arrays.asList(new File("zzz/example4"), new File("example"), new File("example1"), new File("example2"), new File("example3"));
+            SendFile sendFile = new SendFile();
+            List<File> files = Arrays.asList(new File("zzz/example4"), new File("build.gradle"), new File("example3"));
             sendFile.send(files);
         } catch (IOException e) {
             logger.error("Could not open socket");

@@ -14,12 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SendFile {
-    protected FileTransferConfig fileTransferConfig;
+    protected FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
     protected Socket socket;
     Logger logger = Utils.getLogger(this.getClass());
 
-    public SendFile(FileTransferConfig fileTransferConfig) throws IOException {
-        this.fileTransferConfig = fileTransferConfig;
+    public SendFile() throws IOException {
         this.socket = new Socket(InetAddress.getLoopbackAddress(), fileTransferConfig.getPort());
     }
 
@@ -54,7 +53,7 @@ public class SendFile {
                 boolean isDirectory = file.isDirectory();
                 if (fileTransferConfig.isEncrypted()) {
                     try {
-                        file = FileEncrypt.encryptFile(file, fileTransferConfig);
+                        file = FileEncrypt.encryptFile(file);
                     } catch (Exception e) {
                         logger.error("Could not encrypt file " + file.getName());
                     }

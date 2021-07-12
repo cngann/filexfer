@@ -14,8 +14,9 @@ import javax.crypto.spec.PBEParameterSpec;
 public class FileEncrypt {
     public static String tempFilename;
     public static File tempFile;
+    public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
 
-    public static File encryptFile(File file, FileTransferConfig fileTransferConfig) throws Exception {
+    public static File encryptFile(File file) throws Exception {
         if (!fileTransferConfig.isEncrypted()) return file;
         if (file.isDirectory()) {
             throw new Exception("Cannot encrypt a directory");
