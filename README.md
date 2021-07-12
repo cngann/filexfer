@@ -3,7 +3,9 @@
 ### Purpose: To enable a cross-platform embedded application to privately transfer files between clients and servers in a secure and efficient manner with minimal overhead and configuration, no third-party libraries, and no direct interaction with the underlying operating system.
 
 ###Usage
+
 ####Server
+
 ```java
 class Example {
     public static void main(String[] args) {
@@ -14,7 +16,9 @@ class Example {
     }
 }
 ```
+
 ####Client
+
 ```java
 class Example {
     public static void main(String[] args) {
