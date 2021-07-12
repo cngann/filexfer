@@ -11,17 +11,17 @@ public class Example {
     public static void main(String[] args) {
         Logger logger = Utils.getLogger(Example.class);
         // Configure this
-        FileServerConfig fileServerConfig = new FileServerConfig();
-        fileServerConfig.setFromPath("/tmp");
-        fileServerConfig.setToPath("/tmp");
-        fileServerConfig.setPort(3318);
-        fileServerConfig.setEncrypted(false);
-        fileServerConfig.setRecurseIntoDirectory(false);
-        FileServer fileServer = new FileServer(fileServerConfig);
+        FileTransferConfig fileTransferConfig = new FileTransferConfig();
+        fileTransferConfig.setFromPath("/tmp");
+        fileTransferConfig.setToPath("/tmp");
+        fileTransferConfig.setPort(3318);
+        fileTransferConfig.setEncrypted(false);
+        fileTransferConfig.setRecurseIntoDirectory(false);
+        FileServer fileServer = new FileServer(fileTransferConfig);
         new Thread(fileServer).start();
         // File sender
         try {
-            SendFile sendFile = new SendFile(fileServerConfig);
+            SendFile sendFile = new SendFile(fileTransferConfig);
             List<File> files = Arrays.asList(new File("zzz/example4"), new File("example"), new File("example1"), new File("example2"), new File("example3"));
             sendFile.send(files);
         } catch (IOException e) {

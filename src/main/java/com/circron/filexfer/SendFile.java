@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SendFile {
-    protected FileServerConfig fileServerConfig;
+    protected FileTransferConfig fileTransferConfig;
     protected Socket socket;
     Logger logger = Utils.getLogger(this.getClass());
 
-    public SendFile(FileServerConfig fileServerConfig) throws IOException {
-        this.fileServerConfig = fileServerConfig;
-        this.socket = new Socket(InetAddress.getLoopbackAddress(), fileServerConfig.getPort());
+    public SendFile(FileTransferConfig fileTransferConfig) throws IOException {
+        this.fileTransferConfig = fileTransferConfig;
+        this.socket = new Socket(InetAddress.getLoopbackAddress(), fileTransferConfig.getPort());
     }
 
     public void send(String file) {
@@ -44,17 +44,17 @@ public class SendFile {
     public void send(List<File> files) {
         try {
             DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            files = Utils.getFilesWithDirs(files, fileServerConfig.isRecurseIntoDirectory());
+            files = Utils.getFilesWithDirs(files, fileTransferConfig.isRecurseIntoDirectory());
             logger.debug("Number of files to transfer: " + files.size());
             dataOutputStream.writeInt(files.size());
             dataOutputStream.flush();
             int length;
-            byte[] bytes = new byte[fileServerConfig.getStreamBufferLength()];
+            byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
             for (File file : files) {
                 boolean isDirectory = file.isDirectory();
-                if (fileServerConfig.isEncrypted()) {
+                if (fileTransferConfig.isEncrypted()) {
                     try {
-                        file = FileEncrypt.encryptFile(file, fileServerConfig);
+                        file = FileEncrypt.encryptFile(file, fileTransferConfig);
                     } catch (Exception e) {
                         logger.error("Could not encrypt file " + file.getName());
                     }

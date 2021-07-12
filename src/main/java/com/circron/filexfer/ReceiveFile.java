@@ -11,12 +11,12 @@ import java.net.Socket;
 
 public class ReceiveFile implements Runnable {
     Socket socket;
-    FileServerConfig fileServerConfig;
+    FileTransferConfig fileTransferConfig;
     Logger logger = Utils.getLogger(this.getClass());
 
-    public ReceiveFile(Socket socket, FileServerConfig fileServerConfig) {
+    public ReceiveFile(Socket socket, FileTransferConfig fileTransferConfig) {
         this.socket = socket;
-        this.fileServerConfig = fileServerConfig;
+        this.fileTransferConfig = fileTransferConfig;
     }
 
     public void run() {
@@ -26,8 +26,8 @@ public class ReceiveFile implements Runnable {
             int length;
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
-                byte[] buf = new byte[fileServerConfig.getStreamBufferLength()];
-                String filename = Utils.getFilePath(fileServerConfig.getToPath(), dataInputStream.readUTF());
+                byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
+                String filename = Utils.getFilePath(fileTransferConfig.getToPath(), dataInputStream.readUTF());
                 boolean isDirectory = dataInputStream.readBoolean();
                 long fileSize = dataInputStream.readLong();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename);
@@ -40,9 +40,9 @@ public class ReceiveFile implements Runnable {
                         fileSize -= length;
                     }
                     fos.close();
-                    if (fileServerConfig.isEncrypted()) {
+                    if (fileTransferConfig.isEncrypted()) {
                         try {
-                            FileDecrypt.decryptFile(new File(filename), fileServerConfig);
+                            FileDecrypt.decryptFile(new File(filename), fileTransferConfig);
                         } catch (Exception e) {
                             logger.error("Could not decrypt file\n" + e.getMessage());
                         }

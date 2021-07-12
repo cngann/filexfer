@@ -11,12 +11,12 @@ public class FileServer implements Runnable {
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
-    protected FileServerConfig fileServerConfig;
+    protected FileTransferConfig fileTransferConfig;
     Logger logger = Utils.getLogger(this.getClass());
 
-    public FileServer(FileServerConfig fileServerConfig) {
-        this.fileServerConfig = fileServerConfig;
-        this.serverPort = fileServerConfig.getPort();
+    public FileServer(FileTransferConfig fileTransferConfig) {
+        this.fileTransferConfig = fileTransferConfig;
+        this.serverPort = fileTransferConfig.getPort();
     }
 
     public void run() {
@@ -37,7 +37,7 @@ public class FileServer implements Runnable {
                 logger.error(message);
                 throw new RuntimeException(message, e);
             }
-            new Thread(new ReceiveFile(clientSocket, fileServerConfig)).start();
+            new Thread(new ReceiveFile(clientSocket, fileTransferConfig)).start();
         }
         logger.info("Server Stopped.");
     }

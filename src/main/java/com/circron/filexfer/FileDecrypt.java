@@ -19,21 +19,21 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 public class FileDecrypt {
-    public static File decryptFile(File encryptedFile, FileServerConfig fileServerConfig) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-        if (!fileServerConfig.isEncrypted()) return encryptedFile;
-        String filename = Utils.getFilePath(fileServerConfig.getToPath(), encryptedFile.getName());
-        String password = fileServerConfig.getPassKey();
+    public static File decryptFile(File encryptedFile, FileTransferConfig fileTransferConfig) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        if (!fileTransferConfig.isEncrypted()) return encryptedFile;
+        String filename = Utils.getFilePath(fileTransferConfig.getToPath(), encryptedFile.getName());
+        String password = fileTransferConfig.getPassKey();
         FileInputStream inFile = new FileInputStream(encryptedFile);
         File decryptedFile = new File(filename);
         FileOutputStream outFile = new FileOutputStream(decryptedFile);
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
-        SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileServerConfig.getEncryptionCipher());
+        SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileTransferConfig.getEncryptionCipher());
         SecretKey sKey = sKeyFac.generateSecret(keySpec);
         byte[] salt = new byte[8];
         inFile.read(salt);
         int iterations = 100;
         PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, iterations);
-        Cipher cipher = Cipher.getInstance(fileServerConfig.getEncryptionCipher());
+        Cipher cipher = Cipher.getInstance(fileTransferConfig.getEncryptionCipher());
         cipher.init(Cipher.DECRYPT_MODE, sKey, parameterSpec);
         return Utils.getFile(decryptedFile, cipher, inFile, outFile);
     }
