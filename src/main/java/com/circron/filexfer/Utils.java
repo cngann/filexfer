@@ -5,9 +5,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -55,5 +61,31 @@ public class Utils {
         } else {
             return path + "/" + filename;
         }
+    }
+
+    static List<File> getFilesFromDir(File directory) throws FileNotFoundException {
+        File[] directoryFiles = directory.listFiles();
+        if (directoryFiles == null) throw new FileNotFoundException("Permission Denied");
+        List<File> files = new ArrayList<>();
+        if (directory.isDirectory() && directoryFiles.length > 0) {
+            files.addAll(getFilesFromDir(directory));
+        }
+        files.forEach(System.out::println);
+        return files;
+    }
+
+    static List<File> getFilesWithDirs(List<File> files, boolean recurseIntoDirs) {
+        List<File> filesWithDirs = new ArrayList<>(files);
+        for (File file : files) {
+            if (file.getParentFile() != null) {
+                if (recurseIntoDirs) {
+                    filesWithDirs.add(0, file.getParentFile());
+                } else {
+                    logger.info("Skipping subdirectories and their files, recursion is not enabled");
+                    filesWithDirs.remove(file);
+                }
+            }
+        }
+        return filesWithDirs;
     }
 }

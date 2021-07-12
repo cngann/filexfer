@@ -28,20 +28,29 @@ public class ReceiveFile implements Runnable {
             for (int i = 0; i < number; i++) {
                 byte[] buf = new byte[fileServerConfig.getStreamBufferLength()];
                 String filename = Utils.getFilePath(fileServerConfig.getToPath(), dataInputStream.readUTF());
+                boolean isDirectory = dataInputStream.readBoolean();
                 long fileSize = dataInputStream.readLong();
-                logger.debug("Receiving file: " + filename);
+                logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename);
                 logger.debug("Receiving Size: " + fileSize);
-                FileOutputStream fos = new FileOutputStream(filename);
-                while (fileSize > 0 && (length = dataInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
-                    fos.write(buf, 0, length);
-                    fileSize -= length;
-                }
-                fos.close();
-                if (fileServerConfig.isEncrypted()) {
-                    try {
-                        FileDecrypt.decryptFile(new File(filename), fileServerConfig);
-                    } catch (Exception e) {
-                        logger.error("Could not decrypt file\n" + e.getMessage());
+                logger.debug("Is directory: " + isDirectory);
+                if (!isDirectory) {
+                    FileOutputStream fos = new FileOutputStream(filename);
+                    while (fileSize > 0 && (length = dataInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
+                        fos.write(buf, 0, length);
+                        fileSize -= length;
+                    }
+                    fos.close();
+                    if (fileServerConfig.isEncrypted()) {
+                        try {
+                            FileDecrypt.decryptFile(new File(filename), fileServerConfig);
+                        } catch (Exception e) {
+                            logger.error("Could not decrypt file\n" + e.getMessage());
+                        }
+                    }
+                } else {
+                    boolean dirExists = new File(filename).mkdirs();
+                    if (dirExists) {
+                        logger.info("Directory already exists");
                     }
                 }
             }

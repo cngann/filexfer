@@ -16,13 +16,13 @@ public class Example {
         fileServerConfig.setToPath("/tmp");
         fileServerConfig.setPort(3318);
         fileServerConfig.setEncrypted(false);
-        // File receiver
+        fileServerConfig.setRecurseIntoDirectory(false);
         FileServer fileServer = new FileServer(fileServerConfig);
         new Thread(fileServer).start();
         // File sender
         try {
             SendFile sendFile = new SendFile(fileServerConfig);
-            List<File> files = Arrays.asList(new File("example"), new File("example1"), new File("example2"), new File("example3"));
+            List<File> files = Arrays.asList(new File("zzz/example4"), new File("example"), new File("example1"), new File("example2"), new File("example3"));
             sendFile.send(files);
         } catch (IOException e) {
             logger.error("Could not open socket");

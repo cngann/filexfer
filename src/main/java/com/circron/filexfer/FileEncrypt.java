@@ -18,7 +18,6 @@ public class FileEncrypt {
     public static File encryptFile(File file, FileServerConfig fileServerConfig) throws Exception {
         if (!fileServerConfig.isEncrypted()) return file;
         if (file.isDirectory()) {
-            // TODO: use dir parser in Utils class
             throw new Exception("Cannot encrypt a directory");
         }
         String filename = file.getPath();

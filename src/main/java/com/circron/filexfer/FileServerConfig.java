@@ -6,21 +6,19 @@ public class FileServerConfig {
     int port = 3318;
     int streamBufferLength = 4092;
     boolean encrypted = false;
+    boolean recurseIntoDirectory = false;
     String fromPath = "/tmp";
     String toPath = "/tmp";
     String passKey = "someSortOfPasskey";
     String encryptionCipher = "PBEWithMD5AndDES";
     String encryptedFileExtension = ".des";
 
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileServerConfig that = (FileServerConfig)o;
-        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher) && Objects.equals(encryptedFileExtension, that.encryptedFileExtension);
+    public boolean isRecurseIntoDirectory() {
+        return recurseIntoDirectory;
     }
 
-    @Override public int hashCode() {
-        return Objects.hash(port, streamBufferLength, encrypted, fromPath, toPath, passKey, encryptionCipher, encryptedFileExtension);
+    public void setRecurseIntoDirectory(boolean recurseIntoDirectory) {
+        this.recurseIntoDirectory = recurseIntoDirectory;
     }
 
     public String getEncryptedFileExtension() {
@@ -85,5 +83,16 @@ public class FileServerConfig {
 
     public void setStreamBufferLength(int streamBufferLength) {
         this.streamBufferLength = streamBufferLength;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileServerConfig that = (FileServerConfig)o;
+        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && recurseIntoDirectory == that.recurseIntoDirectory && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher) && Objects.equals(encryptedFileExtension, that.encryptedFileExtension);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(port, streamBufferLength, encrypted, recurseIntoDirectory, fromPath, toPath, passKey, encryptionCipher, encryptedFileExtension);
     }
 }
