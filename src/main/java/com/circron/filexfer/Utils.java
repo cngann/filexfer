@@ -2,10 +2,10 @@ package com.circron.filexfer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ public class Utils {
     private static final Logger logger = LogManager.getLogger(Utils.class);
 
     public static Logger getLogger(Class<?> clazz) {
+        Configurator.setRootLevel(FileTransferConfig.getInstance().getLogLevel());
         return LogManager.getLogger(clazz);
     }
 
@@ -60,29 +61,29 @@ public class Utils {
         }
     }
 
-    static List<File> getFilesFromDir(File directory) throws FileNotFoundException {
-        File[] directoryFiles = directory.listFiles();
-        if (directoryFiles == null) throw new FileNotFoundException("Permission Denied");
-        List<File> files = new ArrayList<>();
-        if (directory.isDirectory() && directoryFiles.length > 0) {
-            files.addAll(getFilesFromDir(directory));
-        }
-        files.forEach(System.out::println);
-        return files;
-    }
-
-    static List<File> getFilesWithDirs(List<File> files, boolean recurseIntoDirs) {
+    static List<File> getFilesWithDirs(List<File> files) {
+        boolean recurseIntoDirs = FileTransferConfig.getInstance().isRecurseIntoDirectory();
         List<File> filesWithDirs = new ArrayList<>(files);
-        for (File file : files) {
+        for (File file : filesWithDirs) {
+            if (Utils.isInvalidFile(file)) {
+                files.remove(file);
+                continue;
+            }
             if (file.getParentFile() != null) {
                 if (recurseIntoDirs) {
-                    filesWithDirs.add(0, file.getParentFile());
+                    files.add(0, file.getParentFile());
                 } else {
                     logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    filesWithDirs.remove(file);
+                    files.remove(file);
                 }
             }
         }
-        return filesWithDirs;
+        return files;
+    }
+
+    static boolean isInvalidFile(File file) {
+        boolean matches = file.getPath().contains("..");
+        if (matches) logger.warn("File " + file.getPath() + " has been removed from the list due to an invalid pathname");
+        return matches;
     }
 }

@@ -6,14 +6,14 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class SendFile {
+@SuppressWarnings("unused") public class SendFile {
     protected FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
     protected Socket socket;
     Logger logger = Utils.getLogger(this.getClass());
@@ -27,23 +27,13 @@ public class SendFile {
     }
 
     public void send(File file) {
-        List<File> files = new ArrayList<>();
-        if (file.isDirectory()) {
-            try {
-                files.addAll(Utils.getFilesFromDir(file));
-            } catch (FileNotFoundException e) {
-                logger.error(e.getMessage());
-            }
-        } else {
-            files.add(file);
-        }
-        send(files);
+        send(new ArrayList<>(Collections.singletonList(file)));
     }
 
-    public void send(List<File> files) {
+    public void send(List<File> sendFiles) {
         try {
             DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            files = Utils.getFilesWithDirs(files, fileTransferConfig.isRecurseIntoDirectory());
+            List<File> files = Utils.getFilesWithDirs(sendFiles);
             logger.debug("Number of files to transfer: " + files.size());
             dataOutputStream.writeInt(files.size());
             dataOutputStream.flush();

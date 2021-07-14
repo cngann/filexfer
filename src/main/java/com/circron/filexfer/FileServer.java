@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class FileServer implements Runnable {
+@SuppressWarnings("unused") public class FileServer implements Runnable {
     protected int serverPort;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;

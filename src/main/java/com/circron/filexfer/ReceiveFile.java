@@ -52,7 +52,8 @@ public class ReceiveFile implements Runnable {
 
     public void handleEncryptedFile(String filename) {
         try {
-            FileDecrypt.decryptFile(new File(filename));
+            File file = FileDecrypt.decryptFile(new File(filename));
+            logger.debug("File " + file.getPath() + " has been decrypted");
             boolean deleted = new File(filename).delete();
             if (deleted) {
                 logger.debug("Original encrypted file (" + filename + ") has been deleted");

@@ -36,5 +36,4 @@ class Example {
 
 **TODO**
 * Remove traversal paths (eg. `..`, `.`) from both incoming and outgoing files
-* Wire in the encryption modules
 * Remove `example.java`

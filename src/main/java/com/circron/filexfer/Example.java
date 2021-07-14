@@ -1,5 +1,6 @@
 package com.circron.filexfer;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -16,7 +17,8 @@ public class Example {
         fileTransferConfig.setToPath("/tmp");
         fileTransferConfig.setPort(3318);
         fileTransferConfig.setEncrypted(true);
-        fileTransferConfig.setRecurseIntoDirectory(false);
+        fileTransferConfig.setRecurseIntoDirectory(true);
+        fileTransferConfig.setLogLevel(Level.DEBUG);
         FileServer fileServer = new FileServer();
         new Thread(fileServer).start();
         // File sender
@@ -24,7 +26,7 @@ public class Example {
             SendFile sendFile = new SendFile();
 //            List<File> files = Arrays.asList(new File("zzz/example4"), new File("build.gradle"), new File("example3"));
 //            sendFile.send(files);
-            sendFile.send(new File("build.gradle"));
+            sendFile.send(new File("/../../"));
         } catch (IOException e) {
             logger.error("Could not open socket");
             e.printStackTrace();
