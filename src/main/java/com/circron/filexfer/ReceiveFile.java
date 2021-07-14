@@ -24,7 +24,7 @@ public class ReceiveFile implements Runnable {
             int number = dataInputStream.readInt();
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
-                String filename = Utils.getFilePath(fileTransferConfig.getToPath(), dataInputStream.readUTF());
+                String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), dataInputStream.readUTF());
                 boolean isDirectory = dataInputStream.readBoolean();
                 boolean isEncrypted = dataInputStream.readBoolean();
                 long fileSize = dataInputStream.readLong();

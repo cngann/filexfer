@@ -23,7 +23,7 @@ public class FileDecrypt {
 
     public static File decryptFile(File encryptedFile) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted()) return encryptedFile;
-        String filename = Utils.getFilePath(fileTransferConfig.getToPath(), encryptedFile.getName());
+        String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), encryptedFile.getName());
         String password = fileTransferConfig.getPassKey();
         FileInputStream inFile = new FileInputStream(encryptedFile);
         File decryptedFile = new File(filename.replace(fileTransferConfig.getEncryptedFileExtension(), ""));

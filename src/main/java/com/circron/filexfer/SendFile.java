@@ -19,7 +19,7 @@ import java.util.List;
     Logger logger = Utils.getLogger(this.getClass());
 
     public SendFile() throws IOException {
-        this.socket = new Socket(InetAddress.getLoopbackAddress(), fileTransferConfig.getPort());
+        this.socket = new Socket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
     }
 
     public void send(String file) {

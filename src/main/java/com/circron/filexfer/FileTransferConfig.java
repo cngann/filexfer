@@ -9,8 +9,9 @@ import java.util.Objects;
     int streamBufferLength = 4092;
     boolean encrypted = false;
     boolean recurseIntoDirectory = false;
-    String fromPath = "/tmp";
-    String toPath = "/tmp";
+    String sourcePath = "/tmp";
+    String destinationPath = "/tmp";
+    String destinationAddress = "localhost";
     String passKey = "someSortOfPasskey";
     String encryptionCipher = "PBEWithMD5AndDES";
     String encryptedFileExtension = ".des";
@@ -28,6 +29,14 @@ import java.util.Objects;
 
     public Level getLogLevel() {
         return logLevel;
+    }
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
     }
 
     public void setLogLevel(Level logLevel) {
@@ -66,20 +75,20 @@ import java.util.Objects;
         this.port = port;
     }
 
-    public String getFromPath() {
-        return fromPath;
+    public String getSourcePath() {
+        return sourcePath;
     }
 
-    public void setFromPath(String fromPath) {
-        this.fromPath = fromPath;
+    public void setSourcePath(String fromPath) {
+        this.sourcePath = fromPath;
     }
 
-    public String getToPath() {
-        return toPath;
+    public String getDestinationPath() {
+        return destinationPath;
     }
 
-    public void setToPath(String toPath) {
-        this.toPath = toPath;
+    public void setDestinationPath(String toPath) {
+        this.destinationPath = toPath;
     }
 
     public boolean isEncrypted() {
@@ -110,10 +119,10 @@ import java.util.Objects;
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FileTransferConfig that = (FileTransferConfig)o;
-        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && recurseIntoDirectory == that.recurseIntoDirectory && Objects.equals(fromPath, that.fromPath) && Objects.equals(toPath, that.toPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher) && Objects.equals(encryptedFileExtension, that.encryptedFileExtension);
+        return port == that.port && streamBufferLength == that.streamBufferLength && encrypted == that.encrypted && recurseIntoDirectory == that.recurseIntoDirectory && Objects.equals(sourcePath, that.sourcePath) && Objects.equals(destinationPath, that.destinationPath) && Objects.equals(passKey, that.passKey) && Objects.equals(encryptionCipher, that.encryptionCipher) && Objects.equals(encryptedFileExtension, that.encryptedFileExtension);
     }
 
     @Override public int hashCode() {
-        return Objects.hash(port, streamBufferLength, encrypted, recurseIntoDirectory, fromPath, toPath, passKey, encryptionCipher, encryptedFileExtension);
+        return Objects.hash(port, streamBufferLength, encrypted, recurseIntoDirectory, sourcePath, destinationPath, passKey, encryptionCipher, encryptedFileExtension);
     }
 }
