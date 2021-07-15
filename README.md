@@ -1,6 +1,6 @@
 # Embedded File Transfer Library
 ## Private file transfer client and server in Java
-### Purpose: To enable a cross-platform embedded application to privately transfer files between clients and servers in a secure and efficient manner with minimal overhead and configuration, no third-party libraries, and no direct interaction with the underlying operating system.
+### Purpose: To enable a cross-platform embedded application to privately transfer files between clients and servers in a secure and efficient manner with minimal overhead and configuration, no third-party libraries, and no direct interaction with the underlying operating system without using SSL-based sockets due to export restrictions.
 ### Usage
 
 #### Server

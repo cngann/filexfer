@@ -3,9 +3,17 @@ package com.circron.filexfer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -16,10 +24,10 @@ public class FileEncrypt {
     public static File tempFile;
     public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
 
-    public static File encryptFile(File file) throws Exception {
+    public static File encryptFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted()) return file;
         if (file.isDirectory()) {
-            throw new Exception("Cannot encrypt a directory");
+            throw new IOException("Cannot encrypt a directory");
         }
         String filename = file.getPath();
         String password = fileTransferConfig.getPassKey();
