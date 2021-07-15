@@ -5,34 +5,69 @@
 
 #### Server
 ```java
+// basic default configuration
 class Example {
     public static void main(String[] args) {
-        // basic default configuration
-        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
         FileServer fileServer = new FileServer();
         new Thread(fileServer).start();
     }
 }
+
+// basic default configuration, with new port
+class Example {
+    public static void main(String[] args) {
+        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+        fileTransferConfig.setPort(12345);
+        FileServer fileServer = new FileServer();
+        new Thread(fileServer).start();
+    }
+}
+
 ```
 
 #### Client
 ```java
+// basic default configuration
 class Example {
     public static void main(String[] args) {
-        // basic default configuration
-        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
         try {
-            SendFile sendFile = new SendFile();
-            List<File> files = Arrays.asList(new File("file1"), new File("file2"), new File("file3"));
-            sendFile.send(files);
+            new SendFile.send(Arrays.asList(new File("file1"), new File("file2")));
         } catch (Exception e) {
-            // Bare minimum! Please catch the real exceptions!
             e.printStackTrace();
         }
         
     }
 }
+
+// basic default configuration with new port
+class Example {
+    public static void main(String[] args) {
+        FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+        fileTransferConfig.setPort(12345);
+        try {
+            new SendFile.send(Arrays.asList(new File("file1"), new File("file2")));
+        } catch (Exception e) {
+            // Bare minimum! Please catch the real exceptions!
+            e.printStackTrace();
+        }
+
+    }
+}
 ```
 
-**TODO**
-* Remove `example.java`
+### Default Config Options
+```java
+class FileTransferConfig {
+    int port=3318;
+    int streamBufferLength=4092;
+    boolean encrypted=false;
+    boolean recurseIntoDirectory=false;
+    String sourcePath="/tmp";
+    String destinationPath="/tmp";
+    String destinationAddress="localhost";
+    String passKey="someSortOfPasskey";
+    String encryptionCipher="PBEWithMD5AndDES";
+    String encryptedFileExtension=".des";
+    Level logLevel=Level.ALL;
+}
+```
