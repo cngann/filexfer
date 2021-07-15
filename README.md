@@ -35,5 +35,4 @@ class Example {
 ```
 
 **TODO**
-* Remove traversal paths (eg. `..`, `.`) from both incoming and outgoing files
 * Remove `example.java`

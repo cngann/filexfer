@@ -28,10 +28,9 @@ public class Example {
             sendFile.send(new File("build.gradle"));
         } catch (IOException e) {
             logger.error("Could not open socket");
-            e.printStackTrace();
         } catch (Exception e) {
             logger.error("Something else went horribly wrong");
-            e.printStackTrace();
         }
+        fileServer.stop();
     }
 }
