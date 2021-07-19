@@ -3,10 +3,10 @@ package com.circron.filexfer;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 
 public class ReceiveFile implements Runnable {
@@ -20,22 +20,21 @@ public class ReceiveFile implements Runnable {
 
     public void run() {
         try {
-            DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            int number = dataInputStream.readInt();
+            ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            int number = objectInputStream.readInt();
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
-                String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), dataInputStream.readUTF());
-                boolean isDirectory = dataInputStream.readBoolean();
-                boolean isEncrypted = dataInputStream.readBoolean();
-                long fileSize = dataInputStream.readLong();
-                logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename);
-                logger.debug("Receiving Size: " + fileSize);
-                logger.debug("Is directory: " + isDirectory);
-                logger.debug("Is encrypted: " + isEncrypted);
+                FileTransferFile file = (FileTransferFile)objectInputStream.readObject();
+                String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), file.getNormalizedFilename());
+                boolean isDirectory = file.isDirectory();
+                boolean isEncrypted = file.isEncrypted();
+                long fileSize = file.getSize();
+                logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
+                logger.debug("Encrypted: " + isEncrypted);
                 if (!isDirectory) {
-                    writeFile(filename, fileSize, dataInputStream);
+                    writeFile(filename, fileSize, objectInputStream);
                     if (fileTransferConfig.isEncrypted()) {
-                        handleEncryptedFile(filename);
+                        handleDecryption(filename);
                     }
                 } else {
                     boolean dirExists = new File(filename).mkdirs();
@@ -44,13 +43,12 @@ public class ReceiveFile implements Runnable {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             logger.error("IOException");
-            e.printStackTrace();
         }
     }
 
-    public void handleEncryptedFile(String filename) {
+    public void handleDecryption(String filename) {
         try {
             File file = FileDecrypt.decryptFile(new File(filename));
             logger.debug("File " + file.getPath() + " has been decrypted");
@@ -63,12 +61,12 @@ public class ReceiveFile implements Runnable {
         }
     }
 
-    public void writeFile(String filename, long fileSize, DataInputStream dataInputStream) throws IOException {
+    public void writeFile(String filename, long fileSize, ObjectInputStream objectInputStream) throws IOException {
         int length;
         byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
         FileOutputStream fos = new FileOutputStream(filename);
         logger.error("File not found: " + filename);
-        while (fileSize > 0 && (length = dataInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
+        while (fileSize > 0 && (length = objectInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
             fos.write(buf, 0, length);
             fileSize -= length;
         }

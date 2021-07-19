@@ -1,5 +1,6 @@
 package com.circron.filexfer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -61,29 +62,19 @@ public class Utils {
         }
     }
 
-    static List<File> getFilesWithDirs(List<File> files) {
+    static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
         boolean recurseIntoDirs = FileTransferConfig.getInstance().isRecurseIntoDirectory();
-        List<File> filesWithDirs = new ArrayList<>(files);
-        for (File file : filesWithDirs) {
-            if (Utils.isInvalidFile(file)) {
-                files.remove(file);
-                continue;
-            }
-            if (file.getParentFile() != null) {
+        List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
+        for (FileTransferFile fileTransferFile : filesWithDirs) {
+            if (fileTransferFile.getFile().getParentFile() != null) {
                 if (recurseIntoDirs) {
-                    files.add(0, file.getParentFile());
+                    files.add(0, fileTransferFile);
                 } else {
                     logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    files.remove(file);
+                    files.remove(fileTransferFile);
                 }
             }
         }
         return files;
-    }
-
-    static boolean isInvalidFile(File file) {
-        boolean matches = file.getPath().contains("..");
-        if (matches) logger.warn("File " + file.getPath() + " has been removed from the list due to an invalid pathname");
-        return matches;
     }
 }
