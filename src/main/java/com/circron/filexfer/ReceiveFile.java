@@ -11,7 +11,7 @@ import java.net.Socket;
 
 public class ReceiveFile implements Runnable {
     Socket socket;
-    FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     Logger logger = Utils.getLogger(this.getClass());
 
     public ReceiveFile(Socket socket) {
@@ -65,7 +65,6 @@ public class ReceiveFile implements Runnable {
         int length;
         byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
         FileOutputStream fos = new FileOutputStream(filename);
-        logger.error("File not found: " + filename);
         while (fileSize > 0 && (length = objectInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
             fos.write(buf, 0, length);
             fileSize -= length;

@@ -13,12 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused") public class SendFile {
-    protected FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     protected Socket socket;
     Logger logger = Utils.getLogger(this.getClass());
 
     public SendFile() throws IOException {
-        this.socket = new Socket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
+        this.socket = Utils.getClientSocket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
     }
 
     public void send(String file) throws IOException {

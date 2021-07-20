@@ -22,7 +22,7 @@ import javax.crypto.spec.PBEParameterSpec;
 public class FileEncrypt {
     public static String tempFilename;
     public static File tempFile;
-    public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    public static FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public static File encryptFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted()) return file;

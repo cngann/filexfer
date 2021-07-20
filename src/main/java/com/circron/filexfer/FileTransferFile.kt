@@ -4,7 +4,7 @@ import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.Serializable
 
-class FileTransferFile(var file: File): Serializable {
+data class FileTransferFile(var file: File): Serializable {
     var size: Long = file.length()
     var isDirectory: Boolean = file.isDirectory
     var isEncrypted = false

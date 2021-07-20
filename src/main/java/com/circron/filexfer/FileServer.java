@@ -11,7 +11,7 @@ import java.net.Socket;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
-    protected FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     Logger logger = Utils.getLogger(this.getClass());
 
     public FileServer() {
@@ -59,12 +59,14 @@ import java.net.Socket;
 
     private void openServerSocket() {
         try {
-            this.serverSocket = new ServerSocket(this.serverPort);
+            this.serverSocket = Utils.getServerSocket(this.serverPort);
             logger.info("Server started on port " + this.serverPort);
         } catch (IOException e) {
             String message = "Cannot open port " + this.serverPort;
             logger.error(message);
             throw new RuntimeException(message, e);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
     }
 }

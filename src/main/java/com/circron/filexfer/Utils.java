@@ -1,6 +1,5 @@
 package com.circron.filexfer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -9,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,9 +20,34 @@ import javax.crypto.IllegalBlockSizeException;
 
 public class Utils {
     private static final Logger logger = LogManager.getLogger(Utils.class);
+    private static final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
-    public static Logger getLogger(Class<?> clazz) {
-        Configurator.setRootLevel(FileTransferConfig.getInstance().getLogLevel());
+    public static Socket getClientSocket(String host, int port) throws IOException {
+        ClientSocket socket;
+        if (fileTransferConfig.isEncrypted()) {
+            logger.info("Opening SSL connection");
+            socket = new SSLClientSocket();
+        } else {
+            logger.info("Opening plain connection");
+            socket = new PlainClientSocket();
+        }
+        return socket.getClientSocket(host, port);
+    }
+
+    public static ServerSocket getServerSocket(int port) throws Exception {
+        ServerSocket socket;
+        if (fileTransferConfig.isEncrypted()) {
+            logger.info("Opening SSL connection");
+            socket = new SSLClientSocket().getServerSocket(port);
+        } else {
+            logger.info("Opening plain connection");
+            socket = new PlainClientSocket().getServerSocket(port);
+        }
+        return socket;
+    }
+
+        public static Logger getLogger(Class<?> clazz) {
+        Configurator.setAllLevels(LogManager.getRootLogger().getName(), FileTransferConfig.INSTANCE.getLogLevel());
         return LogManager.getLogger(clazz);
     }
 
@@ -63,7 +89,7 @@ public class Utils {
     }
 
     static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
-        boolean recurseIntoDirs = FileTransferConfig.getInstance().isRecurseIntoDirectory();
+        boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
         List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
         for (FileTransferFile fileTransferFile : filesWithDirs) {
             if (fileTransferFile.getFile().getParentFile() != null) {

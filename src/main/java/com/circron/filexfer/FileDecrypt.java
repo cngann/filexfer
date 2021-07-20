@@ -19,24 +19,24 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 public class FileDecrypt {
-    public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    public static FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public static File decryptFile(File encryptedFile) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted()) return encryptedFile;
         String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), encryptedFile.getName());
         String password = fileTransferConfig.getPassKey();
-        FileInputStream inFile = new FileInputStream(encryptedFile);
+        FileInputStream fileInputStream = new FileInputStream(encryptedFile);
         File decryptedFile = new File(filename.replace(fileTransferConfig.getEncryptedFileExtension(), ""));
-        FileOutputStream outFile = new FileOutputStream(decryptedFile);
+        FileOutputStream fileOutputStream = new FileOutputStream(decryptedFile);
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
         SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileTransferConfig.getEncryptionCipher());
         SecretKey sKey = sKeyFac.generateSecret(keySpec);
         byte[] salt = new byte[8];
-        inFile.read(salt);
+        if (fileInputStream.read(salt) < 0) throw new IOException("Could not read input");
         int iterations = 100;
         PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, iterations);
         Cipher cipher = Cipher.getInstance(fileTransferConfig.getEncryptionCipher());
         cipher.init(Cipher.DECRYPT_MODE, sKey, parameterSpec);
-        return Utils.getFile(decryptedFile, cipher, inFile, outFile);
+        return Utils.getFile(decryptedFile, cipher, fileInputStream, fileOutputStream);
     }
 }
