@@ -47,14 +47,14 @@ public class Encrypt {
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
         SecretKeyFactory sKeyFac = SecretKeyFactory.getInstance(fileTransferConfig.getEncryptionCipher());
         SecretKey sKey = sKeyFac.generateSecret(keySpec);
-        byte[] salt = new byte[8];
+        byte[] salt = new byte[fileTransferConfig.getSaltByteSize()];
         Random random = new Random();
         random.nextBytes(salt);
-        int iterations = 100;
+        int iterations = fileTransferConfig.getSaltIterations();
         PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, iterations);
-        Cipher c = Cipher.getInstance(fileTransferConfig.getEncryptionCipher());
-        c.init(Cipher.ENCRYPT_MODE, sKey, parameterSpec);
+        Cipher cipher = Cipher.getInstance(fileTransferConfig.getEncryptionCipher());
+        cipher.init(Cipher.ENCRYPT_MODE, sKey, parameterSpec);
         outFile.write(salt);
-        return Utils.getFile(tempFile, c, inFile, outFile);
+        return Utils.getFile(tempFile, cipher, inFile, outFile);
     }
 }
