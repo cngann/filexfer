@@ -12,9 +12,9 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 
 @SuppressWarnings("unused") public class ReceiveFile implements Runnable {
-    Socket socket;
+    private final Socket socket;
+    private final Logger logger = Utils.getLogger(this.getClass());
     FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    Logger logger = Utils.getLogger(this.getClass());
 
     public ReceiveFile(Socket socket) {
         this.socket = socket;

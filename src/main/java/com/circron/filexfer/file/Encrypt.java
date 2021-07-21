@@ -25,10 +25,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 public class Encrypt {
-    public static String tempFilename;
-    public static File tempFile;
     public static FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    public final static Logger logger = Utils.getLogger(Encrypt.class);
+    private final static Logger logger = Utils.getLogger(Encrypt.class);
 
     public static File encryptFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         if (!fileTransferConfig.isEncrypted() || fileTransferConfig.getUseSsl()) {
@@ -42,8 +40,8 @@ public class Encrypt {
         }
         String filename = file.getPath();
         String password = fileTransferConfig.getPassKey();
-        tempFilename = filename + fileTransferConfig.getEncryptedFileExtension();
-        tempFile = new File(tempFilename);
+        String tempFilename = filename + fileTransferConfig.getEncryptedFileExtension();
+        File tempFile = new File(tempFilename);
         FileInputStream inFile = new FileInputStream(file);
         FileOutputStream outFile = new FileOutputStream(tempFile);
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());

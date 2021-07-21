@@ -15,9 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused") public class SendFile {
-    protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    protected Socket socket;
-    Logger logger = Utils.getLogger(this.getClass());
+    private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    private final Socket socket;
+    private final Logger logger = Utils.getLogger(this.getClass());
 
     public SendFile() throws IOException {
         this.socket = Utils.getClientSocket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
