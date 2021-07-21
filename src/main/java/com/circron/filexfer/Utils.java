@@ -37,7 +37,7 @@ public class Utils {
             logger.warn("Keystore does not exist! Falling back to plain socket");
             fileTransferConfig.setEncrypted(false);
         }
-        if (fileTransferConfig.isEncrypted() && keystoreExists) {
+        if (fileTransferConfig.isEncrypted() && fileTransferConfig.getUseSsl()) {
             logger.info("Opening SSL connection");
             socket = new SSLFileTransferSocket();
         } else {

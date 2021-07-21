@@ -6,6 +6,7 @@ object FileTransferConfig {
     var port = 3318
     var streamBufferLength = 4092
     var isEncrypted = false
+    var useSsl = false
     var isRecurseIntoDirectory = false
     var sourcePath = "/tmp"
     var destinationPath = "/tmp"

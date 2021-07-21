@@ -41,15 +41,15 @@ import java.util.List;
         logger.debug("Number of files to transfer: " + files.size());
         objectOutputStream.writeInt(files.size());
         objectOutputStream.flush();
+        boolean isEncryptedNoSsl = fileTransferConfig.isEncrypted() && !fileTransferConfig.getUseSsl();
         int length;
         byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
         for (FileTransferFile fileTransferFile : files) {
             boolean isDirectory = fileTransferFile.isDirectory();
-//            boolean isEncrypted = fileTransferConfig.isEncrypted();
-//            if (isEncrypted) {
-//                fileTransferFile.setFile(handleEncryption(fileTransferFile.getFile()));
-//                fileTransferFile.setEncrypted(true);
-//            }
+            if (isEncryptedNoSsl) {
+                fileTransferFile.setFile(handleEncryption(fileTransferFile.getFile()));
+                fileTransferFile.setEncrypted(true);
+            }
             logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + fileTransferFile.getPath());
             objectOutputStream.writeObject(fileTransferFile);
             objectOutputStream.flush();
@@ -59,9 +59,9 @@ import java.util.List;
                 objectOutputStream.write(bytes, 0, length);
                 objectOutputStream.flush();
             }
-//            if (isEncrypted) {
-//                cleanUpTempFile(fileTransferFile.getFile());
-//            }
+            if (isEncryptedNoSsl) {
+                cleanUpTempFile(fileTransferFile.getFile());
+            }
         }
         objectOutputStream.close();
     }

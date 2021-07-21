@@ -25,15 +25,18 @@ import java.net.Socket;
             ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
             int number = objectInputStream.readInt();
             logger.debug("Number of Files to be received: " + number);
+            boolean isEncryptedNoSsl = fileTransferConfig.isEncrypted() && !fileTransferConfig.getUseSsl();
             for (int i = 0; i < number; i++) {
                 FileTransferFile file = (FileTransferFile)objectInputStream.readObject();
                 String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), file.getNormalizedFilename());
                 boolean isDirectory = file.isDirectory();
-                boolean isEncrypted = file.isEncrypted();
                 long fileSize = file.getSize();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
-                logger.debug("Encrypted: " + isEncrypted);
+                logger.debug("Encrypted: " + isEncryptedNoSsl);
                 if (!isDirectory) {
+                    if (isEncryptedNoSsl) {
+                        handleDecryption(filename);
+                    }
                     writeFile(filename, fileSize, objectInputStream);
                 } else {
                     boolean dirExists = new File(filename).mkdirs();
