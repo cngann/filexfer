@@ -1,5 +1,7 @@
 package com.circron.filexfer;
 
+import com.circron.filexfer.file.Encrypt;
+
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedOutputStream;
@@ -43,11 +45,11 @@ import java.util.List;
         byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
         for (FileTransferFile fileTransferFile : files) {
             boolean isDirectory = fileTransferFile.isDirectory();
-            boolean isEncrypted = fileTransferConfig.isEncrypted();
-            if (isEncrypted) {
-                fileTransferFile.setFile(handleEncryption(fileTransferFile.getFile()));
-                fileTransferFile.setEncrypted(true);
-            }
+//            boolean isEncrypted = fileTransferConfig.isEncrypted();
+//            if (isEncrypted) {
+//                fileTransferFile.setFile(handleEncryption(fileTransferFile.getFile()));
+//                fileTransferFile.setEncrypted(true);
+//            }
             logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + fileTransferFile.getPath());
             objectOutputStream.writeObject(fileTransferFile);
             objectOutputStream.flush();
@@ -57,9 +59,9 @@ import java.util.List;
                 objectOutputStream.write(bytes, 0, length);
                 objectOutputStream.flush();
             }
-            if (isEncrypted) {
-                cleanUpTempFile(fileTransferFile.getFile());
-            }
+//            if (isEncrypted) {
+//                cleanUpTempFile(fileTransferFile.getFile());
+//            }
         }
         objectOutputStream.close();
     }
@@ -75,7 +77,7 @@ import java.util.List;
 
     private File handleEncryption(File file) {
         try {
-            file = FileEncrypt.encryptFile(file);
+            file = Encrypt.encryptFile(file);
         } catch (Exception e) {
             logger.error("Could not encrypt file " + file.getName() + ": " + e.getMessage());
         }

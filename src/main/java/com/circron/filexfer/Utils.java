@@ -23,35 +23,36 @@ public class Utils {
     private static final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public static Socket getClientSocket(String host, int port) throws IOException {
-        ClientSocket socket;
-        if (fileTransferConfig.isEncrypted()) {
-            logger.info("Opening SSL connection");
-            socket = new SSLClientSocket();
-        } else {
-            logger.info("Opening plain connection");
-            socket = new PlainClientSocket();
-        }
-        return socket.getClientSocket(host, port);
+        return getSocket().getClientSocket(host, port);
     }
 
     public static ServerSocket getServerSocket(int port) throws Exception {
-        ServerSocket socket;
-        if (fileTransferConfig.isEncrypted()) {
+        return getSocket().getServerSocket(port);
+    }
+
+    private static FileTransferSocket getSocket() {
+        FileTransferSocket socket;
+        boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
+        if (!keystoreExists && fileTransferConfig.getPlainFallback()) {
+            logger.warn("Keystore does not exist! Falling back to plain socket");
+            fileTransferConfig.setEncrypted(false);
+        }
+        if (fileTransferConfig.isEncrypted() && keystoreExists) {
             logger.info("Opening SSL connection");
-            socket = new SSLClientSocket().getServerSocket(port);
+            socket = new SSLFileTransferSocket();
         } else {
             logger.info("Opening plain connection");
-            socket = new PlainClientSocket().getServerSocket(port);
+            socket = new PlainFileTransferSocket();
         }
         return socket;
     }
 
-        public static Logger getLogger(Class<?> clazz) {
+    public static Logger getLogger(Class<?> clazz) {
         Configurator.setAllLevels(LogManager.getRootLogger().getName(), FileTransferConfig.INSTANCE.getLogLevel());
         return LogManager.getLogger(clazz);
     }
 
-    static File getFile(File file, Cipher cipher, FileInputStream fileInputStream, FileOutputStream fileOutputStream) throws IOException, IllegalBlockSizeException, BadPaddingException {
+    public static File getFile(File file, Cipher cipher, FileInputStream fileInputStream, FileOutputStream fileOutputStream) throws IOException, IllegalBlockSizeException, BadPaddingException {
         byte[] input = new byte[64];
         int bytesRead;
         while ((bytesRead = fileInputStream.read(input)) != -1) {
@@ -70,7 +71,7 @@ public class Utils {
         return file;
     }
 
-    static String getFilePath(String path, String filename) {
+    public static String getFilePath(String path, String filename) {
         logger.debug("Calling getFilePath with path " + path + " and filename " + filename);
         if (filename == null) {
             filename = new Random().toString();

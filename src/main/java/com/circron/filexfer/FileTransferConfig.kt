@@ -14,4 +14,10 @@ object FileTransferConfig {
     var encryptionCipher = "PBEWithMD5AndDES"
     var encryptedFileExtension = ".des"
     var logLevel: Level = Level.WARN
+    var plainFallback = false
+    var keystorePassphrase = "password"
+    var keystoreFile = "default"
+    var keystoreInstanceType = "JKS"
+    var keyManagerInstanceType = "SunX509"
+    var sslContext = "TLS"
 }

@@ -1,5 +1,7 @@
 package com.circron.filexfer;
 
+import com.circron.filexfer.file.Decrypt;
+
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedInputStream;
@@ -9,7 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-public class ReceiveFile implements Runnable {
+@SuppressWarnings("unused") public class ReceiveFile implements Runnable {
     Socket socket;
     FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     Logger logger = Utils.getLogger(this.getClass());
@@ -33,9 +35,6 @@ public class ReceiveFile implements Runnable {
                 logger.debug("Encrypted: " + isEncrypted);
                 if (!isDirectory) {
                     writeFile(filename, fileSize, objectInputStream);
-                    if (fileTransferConfig.isEncrypted()) {
-                        handleDecryption(filename);
-                    }
                 } else {
                     boolean dirExists = new File(filename).mkdirs();
                     if (dirExists) {
@@ -50,7 +49,7 @@ public class ReceiveFile implements Runnable {
 
     public void handleDecryption(String filename) {
         try {
-            File file = FileDecrypt.decryptFile(new File(filename));
+            File file = Decrypt.decryptFile(new File(filename));
             logger.debug("File " + file.getPath() + " has been decrypted");
             boolean deleted = new File(filename).delete();
             if (deleted) {

@@ -1,4 +1,7 @@
-package com.circron.filexfer;
+package com.circron.filexfer.file;
+
+import com.circron.filexfer.FileTransferConfig;
+import com.circron.filexfer.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +21,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-public class FileDecrypt {
+public class Decrypt {
     public static FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public static File decryptFile(File encryptedFile) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
