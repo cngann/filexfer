@@ -6,10 +6,10 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.circron" level="debug" additivity="false">
+        <Logger name="com.circron" level="TRACE" additivity="false">
             <AppenderRef ref="LogToConsole"/>
         </Logger>
-        <Root level="error">
+        <Root level="TRACE">
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>

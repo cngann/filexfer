@@ -1,4 +1,9 @@
-package com.circron.filexfer;
+package com.circron.filexfer.file;
+
+import com.circron.filexfer.FileTransferConfig;
+import com.circron.filexfer.Utils;
+
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,15 +24,21 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-public class FileEncrypt {
+public class Encrypt {
     public static String tempFilename;
     public static File tempFile;
-    public static FileTransferConfig fileTransferConfig = FileTransferConfig.getInstance();
+    public static FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    public final static Logger logger = Utils.getLogger(Encrypt.class);
 
     public static File encryptFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        if (!fileTransferConfig.isEncrypted()) return file;
+        if (!fileTransferConfig.isEncrypted() || fileTransferConfig.getUseSsl()) {
+            logger.warn("Encryption not enabled");
+            return file;
+        }
         if (file.isDirectory()) {
-            throw new IOException("Cannot encrypt a directory");
+            String message = "Cannot encrypt a directory";
+            logger.info(message);
+            throw new IOException(message);
         }
         String filename = file.getPath();
         String password = fileTransferConfig.getPassKey();
