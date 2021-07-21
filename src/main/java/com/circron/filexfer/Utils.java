@@ -33,7 +33,7 @@ public class Utils {
     private static FileTransferSocket getSocket() {
         FileTransferSocket socket;
         boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
-        if (!keystoreExists && fileTransferConfig.getPlainFallback()) {
+        if (!keystoreExists && fileTransferConfig.getPlainTextFallback()) {
             logger.warn("Keystore does not exist! Falling back to plain socket");
             fileTransferConfig.setEncrypted(false);
         }
