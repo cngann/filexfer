@@ -1,5 +1,8 @@
 package com.circron.filexfer;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.file.PathUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -73,16 +76,16 @@ public class Utils {
 
     public static String getFilePath(String path, String filename) {
         logger.debug("Calling getFilePath with path " + path + " and filename " + filename);
-        if (filename.startsWith("/")) {
+        if (filename.startsWith(File.separator)) {
             filename = filename.substring(1);
         }
         if (path == null) {
-            path = "/";
+            path = File.separator;
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith(File.separator)) {
             return path + filename;
         } else {
-            return path + "/" + filename;
+            return path + File.separator + filename;
         }
     }
 
