@@ -10,7 +10,6 @@ object FileTransferConfig {
     var isEncrypted = false
     var useSsl = false
     var isRecurseIntoDirectory = false
-    var sourcePath = "/tmp"
     var destinationPath = "/tmp"
     var destinationAddress = "localhost"
     var passKey = "someSortOfPasskey"

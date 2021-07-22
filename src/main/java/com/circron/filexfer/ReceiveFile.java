@@ -2,6 +2,7 @@ package com.circron.filexfer;
 
 import com.circron.filexfer.file.Decrypt;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedInputStream;
@@ -66,7 +67,7 @@ import java.net.Socket;
     public void writeFile(String filename, long fileSize, ObjectInputStream objectInputStream) throws IOException {
         int length;
         byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
-        FileOutputStream fos = new FileOutputStream(filename);
+        FileOutputStream fos = new FileOutputStream(FilenameUtils.normalize(filename));
         while (fileSize > 0 && (length = objectInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
             fos.write(buf, 0, length);
             fileSize -= length;

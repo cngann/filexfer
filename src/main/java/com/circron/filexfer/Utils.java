@@ -73,9 +73,6 @@ public class Utils {
 
     public static String getFilePath(String path, String filename) {
         logger.debug("Calling getFilePath with path " + path + " and filename " + filename);
-        if (filename == null) {
-            filename = new Random().toString();
-        }
         if (filename.startsWith("/")) {
             filename = filename.substring(1);
         }
@@ -92,16 +89,21 @@ public class Utils {
     static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
         boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
         List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
-        for (FileTransferFile fileTransferFile : filesWithDirs) {
+        for (FileTransferFile fileTransferFile : files) {
+            if (!fileTransferFile.getFile().exists()) {
+                logger.warn("Removing non-existent file " + fileTransferFile.getFilename());
+                filesWithDirs.remove(fileTransferFile);
+                continue;
+            }
             if (fileTransferFile.getFile().getParentFile() != null) {
                 if (recurseIntoDirs) {
-                    files.add(0, fileTransferFile);
+                    filesWithDirs.add(0, fileTransferFile);
                 } else {
                     logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    files.remove(fileTransferFile);
+                    filesWithDirs.remove(fileTransferFile);
                 }
             }
         }
-        return files;
+        return filesWithDirs;
     }
 }
