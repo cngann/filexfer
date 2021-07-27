@@ -1,8 +1,5 @@
 package com.circron.filexfer;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.file.PathUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -15,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -38,9 +34,9 @@ public class Utils {
         boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
         if (!keystoreExists && fileTransferConfig.getPlainTextFallback()) {
             logger.warn("Keystore does not exist! Falling back to plain socket");
-            fileTransferConfig.setEncrypted(false);
+            fileTransferConfig.setUseSsl(false);
         }
-        if (fileTransferConfig.isEncrypted() && fileTransferConfig.getUseSsl()) {
+        if (fileTransferConfig.getUseSsl()) {
             logger.info("Opening SSL connection");
             socket = new SSLFileTransferSocket();
         } else {

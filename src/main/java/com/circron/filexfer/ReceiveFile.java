@@ -1,7 +1,5 @@
 package com.circron.filexfer;
 
-import com.circron.filexfer.file.Decrypt;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -26,18 +24,14 @@ import java.net.Socket;
             ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
             int number = objectInputStream.readInt();
             logger.debug("Number of Files to be received: " + number);
-            boolean isEncryptedNoSsl = fileTransferConfig.isEncrypted() && !fileTransferConfig.getUseSsl();
             for (int i = 0; i < number; i++) {
                 FileTransferFile file = (FileTransferFile)objectInputStream.readObject();
                 String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), file.getNormalizedFilename());
                 boolean isDirectory = file.isDirectory();
                 long fileSize = file.getSize();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
-                logger.debug("Encrypted: " + isEncryptedNoSsl);
+                logger.debug("Encrypted: " + fileTransferConfig.getUseSsl());
                 if (!isDirectory) {
-                    if (isEncryptedNoSsl) {
-                        handleDecryption(filename);
-                    }
                     writeFile(filename, fileSize, objectInputStream);
                 } else {
                     boolean dirExists = new File(filename).mkdirs();
@@ -48,19 +42,6 @@ import java.net.Socket;
             }
         } catch (IOException | ClassNotFoundException e) {
             logger.error("IOException");
-        }
-    }
-
-    public void handleDecryption(String filename) {
-        try {
-            File file = Decrypt.decryptFile(new File(filename));
-            logger.debug("File " + file.getPath() + " has been decrypted");
-            boolean deleted = new File(filename).delete();
-            if (deleted) {
-                logger.debug("Original encrypted file (" + filename + ") has been deleted");
-            }
-        } catch (Exception e) {
-            logger.error("Could not decrypt file\n" + e.getMessage());
         }
     }
 
