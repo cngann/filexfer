@@ -1,7 +1,5 @@
 package com.circron.filexfer;
 
-import com.circron.filexfer.file.Encrypt;
-
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedOutputStream;
@@ -15,9 +13,9 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused") public class SendFile {
-    protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    protected Socket socket;
-    Logger logger = Utils.getLogger(this.getClass());
+    private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    private final Socket socket;
+    private final Logger logger = Utils.getLogger(this.getClass());
 
     public SendFile() throws IOException {
         this.socket = Utils.getClientSocket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
@@ -41,15 +39,10 @@ import java.util.List;
         logger.debug("Number of files to transfer: " + files.size());
         objectOutputStream.writeInt(files.size());
         objectOutputStream.flush();
-        boolean isEncryptedNoSsl = fileTransferConfig.isEncrypted() && !fileTransferConfig.getUseSsl();
         int length;
         byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
         for (FileTransferFile fileTransferFile : files) {
             boolean isDirectory = fileTransferFile.isDirectory();
-            if (isEncryptedNoSsl) {
-                fileTransferFile.setFile(handleEncryption(fileTransferFile.getFile()));
-                fileTransferFile.setEncrypted(true);
-            }
             logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + fileTransferFile.getPath());
             objectOutputStream.writeObject(fileTransferFile);
             objectOutputStream.flush();
@@ -58,9 +51,6 @@ import java.util.List;
             while ((length = fileInputStream.read(bytes)) != -1) {
                 objectOutputStream.write(bytes, 0, length);
                 objectOutputStream.flush();
-            }
-            if (isEncryptedNoSsl) {
-                cleanUpTempFile(fileTransferFile.getFile());
             }
         }
         objectOutputStream.close();
@@ -73,14 +63,5 @@ import java.util.List;
         } else {
             logger.warn("Could not clean up encrypted temporary file");
         }
-    }
-
-    private File handleEncryption(File file) {
-        try {
-            file = Encrypt.encryptFile(file);
-        } catch (Exception e) {
-            logger.error("Could not encrypt file " + file.getName() + ": " + e.getMessage());
-        }
-        return file;
     }
 }

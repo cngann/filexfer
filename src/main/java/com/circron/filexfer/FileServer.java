@@ -12,7 +12,7 @@ import java.net.Socket;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
     protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    Logger logger = Utils.getLogger(this.getClass());
+    private final Logger logger = Utils.getLogger(this.getClass());
 
     public FileServer() {
         this.serverPort = fileTransferConfig.getPort();

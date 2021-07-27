@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -33,11 +32,11 @@ public class Utils {
     private static FileTransferSocket getSocket() {
         FileTransferSocket socket;
         boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
-        if (!keystoreExists && fileTransferConfig.getPlainFallback()) {
+        if (!keystoreExists && fileTransferConfig.getPlainTextFallback()) {
             logger.warn("Keystore does not exist! Falling back to plain socket");
-            fileTransferConfig.setEncrypted(false);
+            fileTransferConfig.setUseSsl(false);
         }
-        if (fileTransferConfig.isEncrypted() && fileTransferConfig.getUseSsl()) {
+        if (fileTransferConfig.getUseSsl()) {
             logger.info("Opening SSL connection");
             socket = new SSLFileTransferSocket();
         } else {
@@ -73,35 +72,37 @@ public class Utils {
 
     public static String getFilePath(String path, String filename) {
         logger.debug("Calling getFilePath with path " + path + " and filename " + filename);
-        if (filename == null) {
-            filename = new Random().toString();
-        }
-        if (filename.startsWith("/")) {
+        if (filename.startsWith(File.separator)) {
             filename = filename.substring(1);
         }
         if (path == null) {
-            path = "/";
+            path = File.separator;
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith(File.separator)) {
             return path + filename;
         } else {
-            return path + "/" + filename;
+            return path + File.separator + filename;
         }
     }
 
     static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
         boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
         List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
-        for (FileTransferFile fileTransferFile : filesWithDirs) {
+        for (FileTransferFile fileTransferFile : files) {
+            if (!fileTransferFile.getFile().exists()) {
+                logger.warn("Removing non-existent file " + fileTransferFile.getFilename());
+                filesWithDirs.remove(fileTransferFile);
+                continue;
+            }
             if (fileTransferFile.getFile().getParentFile() != null) {
                 if (recurseIntoDirs) {
-                    files.add(0, fileTransferFile);
+                    filesWithDirs.add(0, fileTransferFile);
                 } else {
                     logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    files.remove(fileTransferFile);
+                    filesWithDirs.remove(fileTransferFile);
                 }
             }
         }
-        return files;
+        return filesWithDirs;
     }
 }

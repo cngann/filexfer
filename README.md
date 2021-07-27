@@ -1,6 +1,7 @@
 # Embedded File Transfer Library
 ## Private file transfer client and server in Java
-### Purpose: To enable a cross-platform embedded application to privately transfer files between clients and servers in a secure and efficient manner with minimal overhead and configuration, no third-party libraries, and no direct interaction with the underlying operating system with or without using SSL-based sockets.
+### Purpose: To be a cross-platform embedded library which transfers files between client and server applications in a secure and efficient manner.
+Minimal overhead and configuration; can be used with or without using SSL sockets.
 ### Usage
 
 #### Server
@@ -60,16 +61,12 @@ class Example {
 object FileTransferConfig {
     var port = 3318
     var streamBufferLength = 4092
-    var isEncrypted = false
     var isRecurseIntoDirectory = false
-    var sourcePath = "/tmp"
     var destinationPath = "/tmp"
     var destinationAddress = "localhost"
-    var passKey = "someSortOfPasskey"
-    var encryptionCipher = "PBEWithMD5AndDES"
-    var encryptedFileExtension = ".des"
     var logLevel: Level = Level.WARN
-    var plainFallback = false
+    var useSsl = false
+    var plainTextFallback = false
     var keystorePassphrase = "password"
     var keystoreFile = "default"
     var keystoreInstanceType = "JKS"
@@ -82,8 +79,6 @@ object FileTransferConfig {
 * If you want to use a self-signed certificate for SSL-based sockets, you will need to specify the following VM arguments:
 `-Djavax.net.ssl.trustStore=[truststore] -Djavax.net.ssl.trustStorePassword=[password]`
   
-* File-based encryption is an option if SSL is not available. Files will be encrypted, transmitted, then decrypted upon receipt at the destination.
-
 * Plaintext (if SSL fails) fallback is available if desired, but definitely not recommended!
 
 * Code is compatible with Java 8 and above
