@@ -1,5 +1,8 @@
 package com.circron.filexfer;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -11,7 +14,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -87,20 +93,20 @@ public class Utils {
 
     static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
         boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
-        List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
+        List<FileTransferFile> filesWithDirs = new ArrayList<>();
+        if (!recurseIntoDirs) {
+            logger.info("Skipping subdirectories and their files, recursion is not enabled");
+        }
         for (FileTransferFile fileTransferFile : files) {
             if (!fileTransferFile.getFile().exists()) {
-                logger.warn("Removing non-existent file " + fileTransferFile.getFilename());
-                filesWithDirs.remove(fileTransferFile);
+                logger.warn("Skipping non-existent file " + fileTransferFile.getFilename());
                 continue;
             }
-            if (fileTransferFile.getFile().getParentFile() != null) {
-                if (recurseIntoDirs) {
-                    filesWithDirs.add(0, fileTransferFile);
-                } else {
-                    logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    filesWithDirs.remove(fileTransferFile);
-                }
+            if (recurseIntoDirs && fileTransferFile.isDirectory()) {
+                FileUtils.listFiles(fileTransferFile.getFile(),
+                                    new RegexFileFilter("^(.*?)"),
+                                    DirectoryFileFilter.DIRECTORY).forEach(
+                                        f -> filesWithDirs.add(new FileTransferFile(f)));
             }
         }
         return filesWithDirs;
