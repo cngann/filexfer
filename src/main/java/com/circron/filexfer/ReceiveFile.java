@@ -30,7 +30,6 @@ import java.net.Socket;
                 boolean isDirectory = file.isDirectory();
                 long fileSize = file.getSize();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
-                logger.debug("Encrypted: " + fileTransferConfig.getUseSsl());
                 if (!isDirectory) {
                     writeFile(filename, fileSize, objectInputStream);
                 } else {

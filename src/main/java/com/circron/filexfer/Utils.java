@@ -13,6 +13,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -102,12 +106,20 @@ public class Utils {
                 logger.warn("Skipping non-existent file " + fileTransferFile.getFilename());
                 continue;
             }
-            if (recurseIntoDirs && fileTransferFile.isDirectory()) {
-                FileUtils.listFiles(fileTransferFile.getFile(),
-                                    new RegexFileFilter("^(.*?)"),
-                                    DirectoryFileFilter.DIRECTORY).forEach(
-                                        f -> filesWithDirs.add(new FileTransferFile(f)));
+            try {
+                Path basepath = Paths.get(".");
+                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basepath = Paths.get(fileTransferFile.getPath()).getParent();
+                Path finalBasepath = basepath;
+                Files.walk(Paths.get(fileTransferFile.getPath())).forEach(f -> {
+                    FileTransferFile tempFileTransferFile = new FileTransferFile(f.toFile());
+                    tempFileTransferFile.setNormalizedFilename(finalBasepath.relativize(f.toFile().toPath()).toString());
+                    filesWithDirs.add(tempFileTransferFile);
+                    logger.debug("Added " + tempFileTransferFile.getNormalizedFilename());
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         }
         return filesWithDirs;
     }
