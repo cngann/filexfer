@@ -37,8 +37,8 @@ class UtilsTest {
     @Test void getFilePath() {
         File file = setupFile("tmp");
         File file2 = setupFile("/tmp/tmp");
-        assertFalse(file.getPath().contains("/"));
-        assertTrue(file2.getPath().contains("/"));
+        assertFalse(file.getPath().contains(File.separator));
+        assertTrue(file2.getPath().contains(File.separator));
         assertNotNull(new Random().toString());
         tearDownFile("tmp");
         tearDownFile("/tmp/tmp");

@@ -117,7 +117,7 @@ public class Utils {
                     logger.debug("Added " + tempFileTransferFile.getNormalizedFilename());
                 });
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("File [" + fileTransferFile.getFilename() + "] error: " + e.getMessage());
             }
 
         }
