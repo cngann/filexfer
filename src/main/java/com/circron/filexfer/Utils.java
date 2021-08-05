@@ -112,7 +112,6 @@ public class Utils {
             } catch (IOException e) {
                 logger.error("File [" + fileTransferFile.getFilename() + "] error: " + e.getMessage());
             }
-
         }
         return filesWithDirs;
     }
