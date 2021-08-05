@@ -6,7 +6,7 @@ object FileTransferConfig {
     var port = 3318
     var streamBufferLength = 4092
     var isRecurseIntoDirectory = false
-    var destinationPath = "/tmp"
+    var destinationFilePath = System.getProperty("java.io.tmpdir") ?: ".${java.io.File.separator}"
     var destinationAddress = "localhost"
     var logLevel: Level = Level.WARN
     var useSsl = false

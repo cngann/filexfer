@@ -13,7 +13,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 public class SSLFileTransferSocket implements FileTransferSocket {
-    FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     @Override public Socket getClientSocket(String host, int port) throws IOException {
         SSLSocketFactory sslSocketFactory = (SSLSocketFactory)SSLSocketFactory.getDefault();

@@ -1,8 +1,5 @@
 package com.circron.filexfer;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -13,15 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -107,9 +100,9 @@ public class Utils {
                 continue;
             }
             try {
-                Path basepath = Paths.get(".");
-                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basepath = Paths.get(fileTransferFile.getPath()).getParent();
-                Path finalBasepath = basepath;
+                Path basePath = Paths.get(".");
+                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basePath = Paths.get(fileTransferFile.getPath()).getParent();
+                Path finalBasepath = basePath;
                 Files.walk(Paths.get(fileTransferFile.getPath())).forEach(f -> {
                     FileTransferFile tempFileTransferFile = new FileTransferFile(f.toFile());
                     tempFileTransferFile.setNormalizedFilename(finalBasepath.relativize(f.toFile().toPath()).toString());
