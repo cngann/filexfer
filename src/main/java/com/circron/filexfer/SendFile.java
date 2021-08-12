@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused") public class SendFile {
+@SuppressWarnings("unused")
+public class SendFile {
     private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     private final Socket socket;
     private final Logger logger = Utils.getLogger(this.getClass());
+    private String destinationDir = "N/A";
 
     public SendFile() throws IOException {
         this.socket = Utils.getClientSocket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());
@@ -33,12 +35,26 @@ import java.util.List;
         send(new ArrayList<>(Collections.singletonList(file)));
     }
 
+    /**
+     * Provides an alternative way for the sender to specify the destination path
+     */
+    public void send(List<FileTransferFile> sendFiles, String destinationDir) throws IOException {
+        this.destinationDir = destinationDir;
+        send(sendFiles);
+    }
+
     public void send(List<FileTransferFile> sendFiles) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         List<FileTransferFile> files = Utils.getFilesWithDirs(sendFiles);
+
         logger.debug("Number of files to transfer: " + files.size());
         objectOutputStream.writeInt(files.size());
         objectOutputStream.flush();
+
+        logger.debug("Destination direcotry: " + destinationDir);
+        objectOutputStream.writeUTF(destinationDir);
+        objectOutputStream.flush();
+
         int length;
         byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
         for (FileTransferFile fileTransferFile : files) {

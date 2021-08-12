@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-@SuppressWarnings("unused") public class ReceiveFile implements Runnable {
+@SuppressWarnings("unused")
+public class ReceiveFile implements Runnable {
     private final Socket socket;
     private final Logger logger = Utils.getLogger(this.getClass());
     FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
@@ -24,11 +25,22 @@ import java.net.Socket;
             ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
             int number = objectInputStream.readInt();
             logger.debug("Number of Files to be received: " + number);
+
+            // If the sender specifies a destination dir, the config's  destination dir
+            // will be overwritten. If no destination dir is provided, the destination dir
+            // in the config file will be used.
+
+            String destinationDir = objectInputStream.readUTF();
+            logger.debug("Destination directory received: " + destinationDir);
+            if (destinationDir != null && !"N/A".equalsIgnoreCase(destinationDir))
+                fileTransferConfig.setDestinationPath(destinationDir);
+
             for (int i = 0; i < number; i++) {
-                FileTransferFile file = (FileTransferFile)objectInputStream.readObject();
+                FileTransferFile file = (FileTransferFile) objectInputStream.readObject();
                 String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), file.getNormalizedFilename());
                 boolean isDirectory = file.isDirectory();
                 long fileSize = file.getSize();
+
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
                 logger.debug("Encrypted: " + fileTransferConfig.getUseSsl());
                 if (!isDirectory) {
@@ -49,7 +61,7 @@ import java.net.Socket;
         int length;
         byte[] buf = new byte[fileTransferConfig.getStreamBufferLength()];
         FileOutputStream fos = new FileOutputStream(FilenameUtils.normalize(filename));
-        while (fileSize > 0 && (length = objectInputStream.read(buf, 0, (int)Math.min(buf.length, fileSize))) != -1) {
+        while (fileSize > 0 && (length = objectInputStream.read(buf, 0, (int) Math.min(buf.length, fileSize))) != -1) {
             fos.write(buf, 0, length);
             fileSize -= length;
         }
