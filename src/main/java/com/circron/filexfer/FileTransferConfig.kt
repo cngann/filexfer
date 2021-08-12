@@ -16,4 +16,6 @@ object FileTransferConfig {
     var keystoreInstanceType = "JKS"
     var keyManagerInstanceType = "SunX509"
     var sslContext = "TLS"
+    var trustStorePassphrase = "password"
+    var trustStoreFile = "default"
 }
