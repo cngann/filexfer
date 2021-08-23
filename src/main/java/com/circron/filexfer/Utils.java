@@ -10,6 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,17 +33,18 @@ public class Utils {
     }
 
     private static FileTransferSocket getSocket() {
-        FileTransferSocket socket;
+        FileTransferSocket socket = null;
         boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
         if (!keystoreExists && fileTransferConfig.getPlainTextFallback()) {
-            logger.warn("Keystore does not exist! Falling back to plain socket");
+            logger.warn("SSL requested, but keystore does not exist. Falling back to a plain socket.");
             fileTransferConfig.setUseSsl(false);
         }
         if (fileTransferConfig.getUseSsl()) {
-            logger.info("Opening SSL connection");
+            logger.info("Opening SSL connection.");
             socket = new SSLFileTransferSocket();
-        } else {
-            logger.info("Opening plain connection");
+        }
+        if (null == socket || fileTransferConfig.getPlainTextFallback()) {
+            logger.info("Opening plain connection.");
             socket = new PlainFileTransferSocket();
         }
         return socket;
@@ -87,20 +91,27 @@ public class Utils {
 
     static List<FileTransferFile> getFilesWithDirs(List<FileTransferFile> files) {
         boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
-        List<FileTransferFile> filesWithDirs = new ArrayList<>(files);
+        List<FileTransferFile> filesWithDirs = new ArrayList<>();
+        if (!recurseIntoDirs) {
+            logger.info("Skipping subdirectories and their files, recursion is not enabled.");
+        }
         for (FileTransferFile fileTransferFile : files) {
             if (!fileTransferFile.getFile().exists()) {
-                logger.warn("Removing non-existent file " + fileTransferFile.getFilename());
-                filesWithDirs.remove(fileTransferFile);
+                logger.warn("Skipping non-existent file " + fileTransferFile.getFilename());
                 continue;
             }
-            if (fileTransferFile.getFile().getParentFile() != null) {
-                if (recurseIntoDirs) {
-                    filesWithDirs.add(0, fileTransferFile);
-                } else {
-                    logger.info("Skipping subdirectories and their files, recursion is not enabled");
-                    filesWithDirs.remove(fileTransferFile);
-                }
+            try {
+                Path basePath = Paths.get(".");
+                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basePath = Paths.get(fileTransferFile.getPath()).getParent();
+                Path finalBasepath = basePath;
+                Files.walk(Paths.get(fileTransferFile.getPath())).forEach(f -> {
+                    FileTransferFile tempFileTransferFile = new FileTransferFile(f.toFile());
+                    tempFileTransferFile.setNormalizedFilename(finalBasepath.relativize(f.toFile().toPath()).toString());
+                    filesWithDirs.add(tempFileTransferFile);
+                    logger.debug("Added " + tempFileTransferFile.getNormalizedFilename());
+                });
+            } catch (IOException e) {
+                logger.error("File [" + fileTransferFile.getFilename() + "] error: " + e.getMessage());
             }
         }
         return filesWithDirs;
