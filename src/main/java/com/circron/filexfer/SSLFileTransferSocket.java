@@ -3,7 +3,6 @@ package com.circron.filexfer;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,62 +22,43 @@ import javax.net.ssl.TrustManagerFactory;
 public class SSLFileTransferSocket implements FileTransferSocket {
     private final Logger logger = Utils.getLogger(this.getClass());
     public static String ClientCipherRegex = ".*"; // default match everything
-    static String VxCipher = "none";
-    static String VxProtocol = "none";
-
     FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     @Override public Socket getClientSocket(String host, int port) throws IOException {
-        SSLSocketFactory sslsocketfactory = null;
+        SSLSocketFactory sslsocketfactory;
         try {
             SSLContext sslContext;
             TrustManagerFactory trustManagerFactory;
             KeyStore trustStore;
-
             trustStore = KeyStore.getInstance(fileTransferConfig.getKeystoreInstanceType());
             trustStore.load(new FileInputStream(fileTransferConfig.getTrustStoreFile()), fileTransferConfig.getTrustStorePassphrase().toCharArray());
             trustManagerFactory = TrustManagerFactory.getInstance(fileTransferConfig.getKeyManagerInstanceType());
             trustManagerFactory.init(trustStore);
-            sslContext = SSLContext.getInstance("TLS");
+            sslContext = SSLContext.getInstance(fileTransferConfig.getSslContext());
             sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
             sslsocketfactory = sslContext.getSocketFactory();
-        } catch (KeyManagementException e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | KeyManagementException | IOException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }  catch (CertificateException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            return null;
         }
         String[] SupportedCiphers = sslsocketfactory.getSupportedCipherSuites();
         int ClientCipherCount = 0;
-        for (int i=0; i<SupportedCiphers.length; i++) {
-            if (SupportedCiphers[i].matches(ClientCipherRegex)) {
+        for (String supportedCipher : SupportedCiphers) {
+            if (supportedCipher.matches(ClientCipherRegex)) {
                 ClientCipherCount++;
             }
         }
         if (ClientCipherCount == 0) {
-            logger.error("\n\nNo " + ClientCipherRegex + " matching Cipher Suites - exiting\n");
+            logger.error("No " + ClientCipherRegex + " matching Cipher Suites - exiting");
             return null;
         }
         String[] ClientCiphers = new String[ClientCipherCount];
-        for (int i=0, j=0; i<SupportedCiphers.length; i++) {
+        for (int i = 0, j = 0; i < SupportedCiphers.length; i++) {
             if (SupportedCiphers[i].matches(ClientCipherRegex)) {
                 ClientCiphers[j++] = SupportedCiphers[i];
             }
         }
-        SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(host, port);
+        SSLSocket sslsocket = (SSLSocket)sslsocketfactory.createSocket(host, port);
         sslsocket.setEnabledCipherSuites(ClientCiphers);
         sslsocket.startHandshake();
         return sslsocket;
@@ -99,5 +79,4 @@ public class SSLFileTransferSocket implements FileTransferSocket {
         sslServerSocketFactory = sslContext.getServerSocketFactory();
         return sslServerSocketFactory.createServerSocket(port);
     }
-
 }

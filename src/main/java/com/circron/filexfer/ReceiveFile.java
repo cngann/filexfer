@@ -26,7 +26,7 @@ import java.net.Socket;
             logger.debug("Number of Files to be received: " + number);
             for (int i = 0; i < number; i++) {
                 FileTransferFile file = (FileTransferFile)objectInputStream.readObject();
-                String filename = Utils.getFilePath(fileTransferConfig.getDestinationPath(), file.getNormalizedFilename());
+                String filename = Utils.getFilePath(fileTransferConfig.getDestinationFilePath(), file.getNormalizedFilename());
                 boolean isDirectory = file.isDirectory();
                 long fileSize = file.getSize();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
