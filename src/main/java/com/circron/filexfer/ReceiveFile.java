@@ -13,7 +13,7 @@ import java.net.Socket;
 @SuppressWarnings("unused") public class ReceiveFile implements Runnable {
     private final Socket socket;
     private final Logger logger = Utils.getLogger(this.getClass());
-    FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public ReceiveFile(Socket socket) {
         this.socket = socket;
@@ -30,7 +30,6 @@ import java.net.Socket;
                 boolean isDirectory = file.isDirectory();
                 long fileSize = file.getSize();
                 logger.debug("Receiving " + (isDirectory ? "directory" : "file") + ": " + filename + " " + fileSize + " bytes");
-                logger.debug("Encrypted: " + fileTransferConfig.getUseSsl());
                 if (!isDirectory) {
                     writeFile(filename, fileSize, objectInputStream);
                 } else {

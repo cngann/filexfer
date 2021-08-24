@@ -43,7 +43,7 @@ import java.util.List;
         byte[] bytes = new byte[fileTransferConfig.getStreamBufferLength()];
         for (FileTransferFile fileTransferFile : files) {
             boolean isDirectory = fileTransferFile.isDirectory();
-            logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + fileTransferFile.getPath());
+            logger.debug("Sending " + (isDirectory ? "directory" : "file") + ": " + fileTransferFile.getNormalizedFilename());
             objectOutputStream.writeObject(fileTransferFile);
             objectOutputStream.flush();
             if (fileTransferFile.isDirectory()) continue;

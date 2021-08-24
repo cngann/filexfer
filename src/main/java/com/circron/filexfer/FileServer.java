@@ -7,11 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 @SuppressWarnings("unused") public class FileServer implements Runnable {
-    protected int serverPort;
+    protected final int serverPort;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
-    protected FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
+    protected final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     private final Logger logger = Utils.getLogger(this.getClass());
 
     public FileServer() {

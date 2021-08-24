@@ -7,8 +7,7 @@ import java.io.Serializable
 data class FileTransferFile(var file: File): Serializable {
     var size: Long = file.length()
     var isDirectory: Boolean = file.isDirectory
-    var isEncrypted = false
-    var path: String = file.path
+    var path: String = FilenameUtils.normalize(file.path)
     var filename: String = file.name
-    var normalizedFilename: String = FilenameUtils.normalize(file.path)
+    var normalizedFilename: String = ""
 }
