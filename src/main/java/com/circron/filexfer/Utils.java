@@ -33,17 +33,18 @@ public class Utils {
     }
 
     private static FileTransferSocket getSocket() {
-        FileTransferSocket socket;
+        FileTransferSocket socket = null;
         boolean keystoreExists = new File(fileTransferConfig.getKeystoreFile()).exists();
         if (!keystoreExists && fileTransferConfig.getPlainTextFallback()) {
-            logger.warn("Keystore does not exist! Falling back to plain socket");
+            logger.warn("SSL requested, but keystore does not exist. Falling back to a plain socket.");
             fileTransferConfig.setUseSsl(false);
         }
         if (fileTransferConfig.getUseSsl()) {
-            logger.info("Opening SSL connection");
+            logger.info("Opening SSL connection.");
             socket = new SSLFileTransferSocket();
-        } else {
-            logger.info("Opening plain connection");
+        }
+        if (null == socket || fileTransferConfig.getPlainTextFallback()) {
+            logger.info("Opening plain connection.");
             socket = new PlainFileTransferSocket();
         }
         return socket;
@@ -92,7 +93,7 @@ public class Utils {
         boolean recurseIntoDirs = fileTransferConfig.isRecurseIntoDirectory();
         List<FileTransferFile> filesWithDirs = new ArrayList<>();
         if (!recurseIntoDirs) {
-            logger.info("Skipping subdirectories and their files, recursion is not enabled");
+            logger.info("Skipping subdirectories and their files, recursion is not enabled.");
         }
         for (FileTransferFile fileTransferFile : files) {
             if (!fileTransferFile.getFile().exists()) {

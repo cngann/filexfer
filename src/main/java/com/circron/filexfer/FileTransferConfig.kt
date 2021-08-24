@@ -6,7 +6,7 @@ object FileTransferConfig {
     var port = 3318
     var streamBufferLength = 4092
     var isRecurseIntoDirectory = false
-    var destinationFilePath = System.getProperty("java.io.tmpdir") ?: ".${java.io.File.separator}"
+    var destinationFilePath = System.getProperty("java.io.tmpdir")
     var destinationAddress = "localhost"
     var logLevel: Level = Level.WARN
     var useSsl = false
@@ -16,4 +16,6 @@ object FileTransferConfig {
     var keystoreInstanceType = "JKS"
     var keyManagerInstanceType = "SunX509"
     var sslContext = "TLS"
+    var trustStorePassphrase = "password"
+    var trustStoreFile = "default"
 }
