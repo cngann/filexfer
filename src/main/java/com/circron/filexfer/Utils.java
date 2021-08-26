@@ -102,7 +102,7 @@ public class Utils {
             }
             try {
                 Path basePath = Paths.get(".");
-                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basePath = Paths.get(fileTransferFile.getPath()).getParent();
+                if (Files.isDirectory(Paths.get(fileTransferFile.getPath()))) basePath = Paths.get(fileTransferFile.getPath());
                 Path finalBasepath = basePath;
                 Files.walk(Paths.get(fileTransferFile.getPath())).forEach(f -> {
                     FileTransferFile tempFileTransferFile = new FileTransferFile(f.toFile());
