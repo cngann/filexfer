@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.circron'
-version '0.3'
+version '0.4'
 
 repositories {
     mavenCentral()
@@ -28,10 +28,14 @@ publishing {
             url = "https://maven.pkg.github.com/cngann/FileXfer"
             credentials {
                 username = "cngann"
-                password = "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"
-//                username = System.getenv("GITHUB_ACTOR")
-//                password = System.getenv("GITHUB_TOKEN")
+                password = "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"
             }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId 'filexfer'
+            from(components.java)
         }
     }
 }
