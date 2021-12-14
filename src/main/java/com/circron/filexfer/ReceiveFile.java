@@ -15,6 +15,10 @@ import java.net.Socket;
     private final Logger logger = Utils.getLogger(this.getClass());
     private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
+    public Socket getSocket() {
+        return socket;
+    }
+
     public ReceiveFile(Socket socket) {
         this.socket = socket;
     }

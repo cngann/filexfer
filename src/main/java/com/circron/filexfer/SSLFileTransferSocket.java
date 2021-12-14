@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyManagementException;
@@ -77,6 +78,6 @@ public class SSLFileTransferSocket implements FileTransferSocket {
         keyManagerFactory.init(keyStore, passphrase);
         sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
         sslServerSocketFactory = sslContext.getServerSocketFactory();
-        return sslServerSocketFactory.createServerSocket(port);
+        return sslServerSocketFactory.createServerSocket(port, 0, InetAddress.getByAddress(new byte[] {0x00,0x00,0x00,0x00}));
     }
 }

@@ -1,6 +1,7 @@
 package com.circron.filexfer;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,6 +14,6 @@ public class PlainFileTransferSocket implements FileTransferSocket {
     }
 
     @Override public ServerSocket getServerSocket(int port) throws Exception {
-        return new ServerSocket(port);
+        return new ServerSocket(port, 0, InetAddress.getByAddress(new byte[] {0x00,0x00,0x00,0x00}));
     }
 }
