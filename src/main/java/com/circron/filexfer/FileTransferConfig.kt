@@ -8,7 +8,7 @@ object FileTransferConfig {
     var isRecurseIntoDirectory = false
     var destinationFilePath = System.getProperty("java.io.tmpdir")
     var destinationAddress = "localhost"
-    var logLevel: Level = Level.WARN
+    var logLevel: Level = LogLevel.setLogLevel("WARN")
     var useSsl = false
     var plainTextFallback = false
     var keystorePassphrase = "password"
