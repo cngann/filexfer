@@ -1,6 +1,6 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 public class SSLFileTransferSocket implements FileTransferSocket {
-    private final Logger logger = Utils.getLogger(this.getClass());
+    private final Log logger = Utils.getLogger(this.getClass());
     public static String ClientCipherRegex = ".*"; // default match everything
     FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 

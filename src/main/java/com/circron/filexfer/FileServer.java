@@ -1,6 +1,6 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,7 +12,7 @@ import java.net.Socket;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
     protected final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
-    private final Logger logger = Utils.getLogger(this.getClass());
+    private final Log logger = Utils.getLogger(this.getClass());
 
     public FileServer() {
         this.serverPort = fileTransferConfig.getPort();

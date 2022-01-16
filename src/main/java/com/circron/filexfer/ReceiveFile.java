@@ -1,7 +1,7 @@
 package com.circron.filexfer;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,7 +12,7 @@ import java.net.Socket;
 
 @SuppressWarnings("unused") public class ReceiveFile implements Runnable {
     private final Socket socket;
-    private final Logger logger = Utils.getLogger(this.getClass());
+    private final Log logger = Utils.getLogger(this.getClass());
     private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public Socket getSocket() {

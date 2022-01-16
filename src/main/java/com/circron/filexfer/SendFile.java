@@ -1,6 +1,6 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.List;
 @SuppressWarnings("unused") public class SendFile {
     private final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
     private final Socket socket;
-    private final Logger logger = Utils.getLogger(this.getClass());
+    private final Log logger = Utils.getLogger(this.getClass());
 
     public SendFile() throws IOException {
         this.socket = Utils.getClientSocket(fileTransferConfig.getDestinationAddress(), fileTransferConfig.getPort());

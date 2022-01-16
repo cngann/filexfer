@@ -1,8 +1,7 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +20,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
 public class Utils {
-    private static final Logger logger = LogManager.getLogger(Utils.class);
+    private static final Log logger = getLogger(Utils.class);
     private static final FileTransferConfig fileTransferConfig = FileTransferConfig.INSTANCE;
 
     public static Socket getClientSocket(String host, int port) throws IOException {
@@ -50,11 +49,14 @@ public class Utils {
         return socket;
     }
 
-    public static Logger getLogger(Class<?> clazz) {
-        Configurator.setAllLevels(LogManager.getRootLogger().getName(), FileTransferConfig.INSTANCE.getLogLevel());
-        return LogManager.getLogger(clazz);
+    public static Log getLogger(Class<?> clazz) {
+        if (!FileTransferConfig.INSTANCE.getLogging()) {
+            System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+        }
+        return LogFactory.getLog(clazz);
     }
 
+    @SuppressWarnings("unused")
     public static File getFile(File file, Cipher cipher, FileInputStream fileInputStream, FileOutputStream fileOutputStream) throws IOException, IllegalBlockSizeException, BadPaddingException {
         byte[] input = new byte[64];
         int bytesRead;

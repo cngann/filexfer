@@ -1,6 +1,6 @@
 package com.circron.filexfer;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileTransferVisitor implements FileVisitor<Path> {
-    Logger logger = Utils.getLogger(this.getClass());
+    Log logger = Utils.getLogger(this.getClass());
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
