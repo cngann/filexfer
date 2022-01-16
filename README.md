@@ -62,9 +62,12 @@ object FileTransferConfig {
     var port = 3318
     var streamBufferLength = 4092
     var isRecurseIntoDirectory = false
-    var destinationPath = "/tmp"
+    var destinationFilePath = System.getProperty("java.io.tmpdir") ?: "."
     var destinationAddress = "localhost"
-    var logLevel: Level = Level.WARN
+    var logging = true
+    // The following has been deprecated and only left to support older code
+    // Deprecation message will appear in most editors
+    var logLevel = "deprecated"
     var useSsl = false
     var plainTextFallback = false
     var keystorePassphrase = "password"
@@ -72,6 +75,8 @@ object FileTransferConfig {
     var keystoreInstanceType = "JKS"
     var keyManagerInstanceType = "SunX509"
     var sslContext = "TLS"
+    var trustStorePassphrase = "password"
+    var trustStoreFile = "default"
 }
 ```
 
