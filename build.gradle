@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.circron'
-version '0.8.1'
+version '0.9'
 
 repositories {
     mavenCentral()
