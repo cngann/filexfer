@@ -24,19 +24,19 @@ import java.net.Socket;
         }
         openServerSocket();
         while (!isStopped()) {
-            Socket clientSocket;
-            try {
-                clientSocket = this.serverSocket.accept();
-            } catch (IOException e) {
-                if (isStopped()) {
-                    logger.debug("Server Stopped.");
-                    return;
-                }
-                String message = "Error accepting client connection";
-                logger.error(message);
-                throw new RuntimeException(message, e);
-            }
-            new Thread(new ReceiveFile(clientSocket)).start();
+//            Socket clientSocket;
+//            try {
+//                clientSocket = this.serverSocket.accept();
+//            } catch (IOException e) {
+//                if (isStopped()) {
+//                    logger.debug("Server Stopped.");
+//                    return;
+//                }
+//                String message = "Error accepting client connection";
+//                logger.error(message);
+//                throw new RuntimeException(message, e);
+//            }
+//            new Thread(new ReceiveFile(clientSocket)).start();
         }
         logger.info("Server Stopped.");
     }

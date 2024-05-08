@@ -22,4 +22,10 @@ object FileTransferConfig {
     var sslContext = "TLS"
     var trustStorePassphrase = "password"
     var trustStoreFile = "default"
+    var useFileTransferSecret = false
+    var transferSecret = ""
+    var useFileTransferToken = false
+    var transferToken = ""
+    var trustStoreInstanceType = "JKS"
+    var trustManagerInstanceType = "SunX509"
 }
