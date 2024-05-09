@@ -32,12 +32,6 @@ public class SSLFileTransferSocket implements FileTransferSocket {
         LocalX509TrustManager[] x509TrustManager;
         try {
             SSLContext sslContext;
-//            KeyStore ksTrust = KeyStore.getInstance("JKS");
-//            ksTrust.load(new FileInputStream("VoipSSLtruststore"), KEYSTORE);
-//            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-//            tmf.init(ksTrust);
-//            trustManagers = getTrustManagers(tmf);
-
             KeyStore ksTrust = KeyStore.getInstance("JKS");
             ksTrust.load(new FileInputStream(fileTransferConfig.getTrustStoreFile()), fileTransferConfig.getTrustStorePassphrase().toCharArray());
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
