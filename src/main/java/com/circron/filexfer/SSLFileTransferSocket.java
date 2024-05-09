@@ -18,7 +18,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class SSLFileTransferSocket implements FileTransferSocket {
     private final Log logger = Utils.getLogger(this.getClass());
@@ -27,16 +29,16 @@ public class SSLFileTransferSocket implements FileTransferSocket {
 
     @Override public Socket getClientSocket(String host, int port) throws IOException {
         SSLSocketFactory sslsocketfactory;
+        LocalX509TrustManager[] x509TrustManager;
         try {
             SSLContext sslContext;
-            TrustManagerFactory trustManagerFactory;
-            KeyStore trustStore;
-            trustStore = KeyStore.getInstance(fileTransferConfig.getKeystoreInstanceType());
-            trustStore.load(new FileInputStream(fileTransferConfig.getTrustStoreFile()), fileTransferConfig.getTrustStorePassphrase().toCharArray());
-            trustManagerFactory = TrustManagerFactory.getInstance(fileTransferConfig.getKeyManagerInstanceType());
-            trustManagerFactory.init(trustStore);
+            KeyStore ksTrust = KeyStore.getInstance("JKS");
+            ksTrust.load(new FileInputStream(fileTransferConfig.getTrustStoreFile()), fileTransferConfig.getTrustStorePassphrase().toCharArray());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+            trustManagerFactory.init(ksTrust);
+            x509TrustManager = getTrustManagers(trustManagerFactory);
             sslContext = SSLContext.getInstance(fileTransferConfig.getSslContext());
-            sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+            sslContext.init(null, x509TrustManager,null);
             sslsocketfactory = sslContext.getSocketFactory();
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | KeyManagementException | IOException e) {
             logger.error(e.getMessage());
@@ -68,16 +70,28 @@ public class SSLFileTransferSocket implements FileTransferSocket {
     @Override public ServerSocket getServerSocket(int port) throws Exception {
         SSLServerSocketFactory sslServerSocketFactory;
         SSLContext sslContext;
-        KeyManagerFactory keyManagerFactory;
         KeyStore keyStore;
-        char[] passphrase = fileTransferConfig.getKeystorePassphrase().toCharArray();
+        LocalX509TrustManager[] x509TrustManager;
+        char[] passphrase = fileTransferConfig.getTrustStorePassphrase().toCharArray();
         sslContext = SSLContext.getInstance(fileTransferConfig.getSslContext());
-        keyManagerFactory = KeyManagerFactory.getInstance(fileTransferConfig.getKeyManagerInstanceType());
-        keyStore = KeyStore.getInstance(fileTransferConfig.getKeystoreInstanceType());
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(fileTransferConfig.getKeyManagerInstanceType());
+        keyStore = KeyStore.getInstance(fileTransferConfig.getTrustManagerInstanceType());
         keyStore.load(new FileInputStream(fileTransferConfig.getKeystoreFile()), passphrase);
         keyManagerFactory.init(keyStore, passphrase);
         sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
         sslServerSocketFactory = sslContext.getServerSocketFactory();
         return sslServerSocketFactory.createServerSocket(port, 0, InetAddress.getByAddress(new byte[] {0x00,0x00,0x00,0x00}));
     }
+
+    private static LocalX509TrustManager[] getTrustManagers(TrustManagerFactory tmf) {
+        LocalX509TrustManager[] localX509TrustManagers;
+        TrustManager[] trustManagers = tmf.getTrustManagers();
+        localX509TrustManagers = new LocalX509TrustManager[trustManagers.length];
+        for (int i = 0; i < localX509TrustManagers.length; i++) {
+            if (trustManagers[i] instanceof X509TrustManager)
+                localX509TrustManagers[i] = (LocalX509TrustManager)trustManagers[i];
+        }
+        return localX509TrustManagers;
+    }
+
 }
